@@ -1,10 +1,24 @@
+import { useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 // import NavDropdown from 'react-bootstrap/NavDropdown';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Auth } from 'aws-amplify'
 
 function NavigationBar() {
+    const [authUser, setAuthUser] = useState("");
+
+    Auth.currentAuthenticatedUser({
+        bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
+    }).then(user => {
+        console.log(user)
+        setAuthUser(user.username)
+    }).catch(err => {
+        console.log(err)
+    });
+
+
     return (
         <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">
             <Container>
@@ -27,7 +41,7 @@ function NavigationBar() {
                         </NavDropdown> */}
                     </Nav>
                     <Nav>
-                        <Nav.Link>User: {}</Nav.Link>
+                        <Nav.Link>User: {authUser}</Nav.Link>
                         <Nav.Link style={{ color: 'red' }} href="#memes">
                             Logout
                         </Nav.Link>
