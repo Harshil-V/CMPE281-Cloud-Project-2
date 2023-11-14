@@ -6,6 +6,14 @@ import Navbar from 'react-bootstrap/Navbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Auth } from 'aws-amplify'
 
+async function signOut() {
+    try {
+        await Auth.signOut();
+    } catch (error) {
+        console.log('error signing out: ', error);
+    }
+}
+
 function NavigationBar() {
     const [authUser, setAuthUser] = useState("");
 
@@ -26,8 +34,8 @@ function NavigationBar() {
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="me-auto">
-                        <Nav.Link href="#features">Images</Nav.Link>
-                        <Nav.Link href="#pricing">Filters</Nav.Link>
+                        <Nav.Link href="/app">Images</Nav.Link>
+                        <Nav.Link href="/videos">Videos</Nav.Link>
                         {/* <NavDropdown title="Dropdown" id="collapsible-nav-dropdown">
                             <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
                             <NavDropdown.Item href="#action/3.2">
@@ -42,7 +50,7 @@ function NavigationBar() {
                     </Nav>
                     <Nav>
                         <Nav.Link>User: {authUser}</Nav.Link>
-                        <Nav.Link style={{ color: 'red' }} href="#memes">
+                        <Nav.Link style={{ color: 'red' }} onClick={signOut}>
                             Logout
                         </Nav.Link>
                     </Nav>
