@@ -8,12 +8,16 @@ import Badge from 'react-bootstrap/Badge';
 import Stack from 'react-bootstrap/Stack';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
+// import { Button } from 'react-bootstrap';
 
 
 const Gallery = () => {
     const [images, setImages] = useState([]);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
+    // const [selectedFile, setSelectedFile] = useState(null);
+    const [file, setFile] = useState(null);
+
 
     useEffect(() => {
         // Fetch image data from data.json (or your API)
@@ -69,7 +73,60 @@ const Gallery = () => {
     const handleSearchChange = (event) => {
         setSearchQuery(event.target.value);
     };
-    
+
+    // const handleFileChange = (e) => {
+    //     const file = e.target.files[0];
+
+    //     if (file) {
+    //         // Check file size and type
+    //         if (file.size <= 20 * 1024 * 1024 && file.type.startsWith('image/')) {
+    //             setSelectedFile(file);
+    //         } else {
+    //             // Reset selected file if it doesn't meet the criteria
+    //             setSelectedFile(null);
+    //             alert('Please select a valid image file (<= 20MB).');
+    //         }
+    //     }
+    // };
+
+    // const handleUpload = () => {
+    //     // Perform upload logic here using selectedFile
+    //     if (selectedFile) {
+    //         // Implement your upload logic (e.g., send to server)
+    //         console.log('File uploaded:', selectedFile);
+    //     } else {
+    //         alert('Please select a file before uploading.');
+    //     }
+    // };
+
+    const handleFileChange = (event) => {
+        const selectedFile = event.target.files[0];
+        if (selectedFile) {
+            if (selectedFile.size <= 10 * 1024 * 1024) {
+                setFile(selectedFile);
+            } else {
+                setFile(null);
+                alert('File size exceeds 10MB limit. Please select a smaller file.');
+            }
+        }
+    };
+
+    const handleFileUpload = () => {
+        // Handle the file upload logic, e.g., read the file content using FileReader API
+        if (file) {
+            console.log('File Uploaded:', file);
+            // const reader = new FileReader();
+            // reader.onload = (e) => {
+            //     // e.target.result contains the file content (e.g., base64 data or text)
+            //     // You can process the file content or upload it to a server
+            //     console.log('File content:', e.target.result);
+            // };
+            // reader.readAsDataURL(file);
+        } else {
+            alert('Please select a file before uploading.');
+        }
+    };
+
 
     const filteredImages = images.filter(image => {
         const matchesCategories = selectedCategories.length === 0 || image.categories.some(category => selectedCategories.includes(category));
@@ -88,7 +145,19 @@ const Gallery = () => {
         <div>
             <div className="filter-buttons">
                 <center>
-                    <h1>Image Gallary</h1>
+                    <div>
+                        <h1>Image Gallary</h1>
+
+                    </div>
+
+                    <Form style={{ maxWidth: 500, marginTop: 5, display: 'flex', marginLeft: 80 }}>
+                        <Form.Group controlId="formFile" className="mb-3 p-1">
+                            <Form.Control type="file" accept="image/*" onChange={handleFileChange} />
+                        </Form.Group>
+                        <Form.Group controlId="formButton" className="mb-3 p-1">
+                            <Form.Control type="button" value="Upload" onClick={handleFileUpload} />
+                        </Form.Group>
+                    </Form>
 
                     <label style={{ marginRight: 10 }}>
                         <input
@@ -113,18 +182,36 @@ const Gallery = () => {
                 </center>
                 {/* Add more category checkboxes */}
             </div>
-            <Form className="mb-3">
-                <center>
-                    <FormControl
-                        style={{ maxWidth: 500, marginTop: 5 }}
-                        type="text"
-                        placeholder="Search Image Tags"
-                        className="mr-sm-2"
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                    />
-                </center>
-            </Form>
+            <div >
+                <Form className="mb-3 p-1">
+                    <center>
+                        <FormControl
+                            style={{ maxWidth: 500, marginTop: 5 }}
+                            type="text"
+                            placeholder="Search Image Tags"
+                            className="mr-sm-2"
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                        />
+                    </center>
+                </Form>
+            </div>
+            {/* <Form.Group>
+                <Form.File
+                    id="custom-file"
+                    label="Choose File"
+                    custom
+                    onChange={handleFileChange}
+                />
+            </Form.Group>
+            <Button
+                variant="primary"
+                disabled={!selectedFile}
+                onClick={handleUpload}
+            >
+                Upload
+            </Button> */}
+
             <div className="image-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "8px", marginLeft: 25 }}>
                 {
                     filteredImages.map(image => (
