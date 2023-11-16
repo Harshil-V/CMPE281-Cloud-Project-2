@@ -2,14 +2,15 @@ import { useState, useEffect } from 'react';
 // import axios from 'axios';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
-import Image from 'react-bootstrap/Image';
+// import Image from 'react-bootstrap/Image';
 import Row from 'react-bootstrap/Row';
 import Badge from 'react-bootstrap/Badge';
 import Stack from 'react-bootstrap/Stack';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
-// import { Button } from 'react-bootstrap';
-
+// import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import DeleteButton from './DeleteButton';
 
 const Gallery = () => {
     const [images, setImages] = useState([]);
@@ -28,7 +29,7 @@ const Gallery = () => {
         setImages([
             {
                 "id": 1,
-                "categories": ["nature", "landscape"],
+                "categories": ["nature", "landscape", 'flower'],
                 "image": "https://i0.wp.com/picjumbo.com/wp-content/uploads/beautiful-nature-mountain-scenery-with-flowers-free-photo.jpg"
             },
             {
@@ -49,12 +50,12 @@ const Gallery = () => {
             {
                 "id": 5,
                 "categories": ["city"],
-                "image": "https://worldstrides.com/wp-content/uploads/2015/07/iStock_000040849990_Large.jpg"
+                "image": "https://st.depositphotos.com/1035350/2277/i/450/depositphotos_22772802-stock-photo-tokyo-cityscape.jpg"
             },
             {
                 "id": 6,
                 "categories": ["space"],
-                "image": "https://webb.nasa.gov/content/webbLaunch/assets/images/images2023/oct-30-23-STScI-01HBBMJ8R6HTXP5W1EVEJ24D64-1K.jpg"
+                "image": "https://www.sciencenews.org/wp-content/uploads/2022/11/Hubble-Pillars-of-Creation.jpg"
             }
             // Add more images with image URLs
         ])
@@ -135,6 +136,11 @@ const Gallery = () => {
 
         return matchesCategories && matchesSearchQuery;
     });
+
+    const handleDelete = () => {
+        // Add your delete logic here
+        console.log('Item deleted!');
+      };
 
 
     // const filteredImages = selectedCategories.length === 0 ? images : images.filter(image =>
@@ -219,15 +225,23 @@ const Gallery = () => {
                             <Container>
                                 <Row>
                                     <Col xs={2} md={4}>
-                                        <Image src={image.image} style={{ width: 171, height: 180 }} loading='lazy' rounded />
+                                        <Card style={{ width: 210 }}>
+                                            <Card.Img  style={{ width: 209, height: 180 }}  variant="top" src={image.image} loading='lazy' />
+                                            <Card.Text className='m-1'>
+                                                <Stack direction="horizontal" gap={2} style={{ paddingTop: 4 }}>
+                                                    {
+                                                        image.categories.map(tag => (
+                                                            <Badge key={tag.id} bg="primary">{tag}</Badge>
+                                                        ))
+                                                    }
+                                                </Stack>
+                                                <DeleteButton onClick={handleDelete} />
+                                                {/* <Button className='mt-3' variant="danger">Delete</Button> */}
+                                            </Card.Text>
+                                        </Card>
+                                        {/* <Image src={image.image} style={{ width: 171, height: 180 }} loading='lazy' rounded /> */}
 
-                                        <Stack direction="horizontal" gap={2} style={{ paddingTop: 4 }}>
-                                            {
-                                                image.categories.map(tag => (
-                                                    <Badge key={tag.id} bg="primary">{tag}</Badge>
-                                                ))
-                                            }
-                                        </Stack>
+
                                     </Col>
                                 </Row>
                             </Container>
