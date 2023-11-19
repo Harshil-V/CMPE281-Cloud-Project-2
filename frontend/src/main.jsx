@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { Amplify, Auth } from 'aws-amplify';
 import { Authenticator } from '@aws-amplify/ui-react';
 import App from './App.jsx'
-// import './index.css'
+import './index.css'
 import awsExports from './aws-exports'
 import '@aws-amplify/ui-react/styles.css'
 import { BrowserRouter , Route, Routes } from 'react-router-dom';
@@ -14,7 +14,7 @@ Auth.configure(awsExports)
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-        <Authenticator>
+        <Authenticator style={{ marginTop: 50 }}>
             <BrowserRouter>
                 <Routes>
                     <Route path="/" exact element={<App />} />
