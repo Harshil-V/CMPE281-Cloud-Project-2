@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Container, Row, Col, Form, Button, FormControl, Dropdown, DropdownButton, Badge } from 'react-bootstrap';
-
+import '../styles.css'
+import axios from 'axios';
 
 const Translation = () => {
     const [selectLanguageCode, setSelectedLanguageCode] = useState('');
@@ -17,6 +18,37 @@ const Translation = () => {
         console.log(language);
     };
 
+
+    const callTranslationAPI = async () => {
+        console.log(`Text: ${inputText}`)
+        console.log(`Code: ${selectLanguageCode}`)
+        try {
+            const response = await axios.post("http://34.213.200.68:80/translate/", {
+                text: inputText,
+                language: selectLanguageCode
+            });
+
+            setOutputText(response.data.translatedText)
+
+            if (response.data.audioStream && response.data.audioStream.data && response.data.audioStream.data.length > 0) {
+                const audioData = new Uint8Array(response.data.audioStream.data);
+                const audioBlob = new Blob([audioData], { type: 'audio/mp3' });
+                const audioURLGen = URL.createObjectURL(audioBlob);
+                setAudioUrl(audioURLGen);
+                console.log(audioURLGen);
+                console.log("Audio URL", audioURLGen)
+            } else {
+                alert("No Audio Stream Received.")
+            }
+
+            setSegmentation(response.data.sentiment);
+            console.log(response.data.sentiment)
+
+        } catch (error) {
+            console.error("There was an error!", error)
+        }
+    }   
+
     const handleTranslate = () => {
         if (inputText == '') {
             alert("Input Field is Empty :(")
@@ -25,16 +57,17 @@ const Translation = () => {
             // You may use a translation API like Google Translate or any other service
 
             // For demonstration purposes, let's just reverse the input text
-            const reversedText = inputText.split('').reverse().join('');
-            setOutputText(reversedText);
+            // const reversedText = inputText.split('').reverse().join('');
+            // setOutputText(reversedText);
 
-            // For demonstration purposes, audio URL is set to Google Translate TTS API
-            const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(reversedText)}&tl=${selectedLanguage}&total=1&idx=0&textlen=${reversedText.length}`;
-            setAudioUrl(ttsUrl);
-            setAudioUrl("https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3")
-            setSegmentation("Negative");
+            // // For demonstration purposes, audio URL is set to Google Translate TTS API
+            // const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(reversedText)}&tl=${selectedLanguage}&total=1&idx=0&textlen=${reversedText.length}`;
+            // setAudioUrl(ttsUrl);
+            // setAudioUrl("https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3")
+            // setSegmentation("Negative");
 
-            console.log(ttsUrl);
+            // console.log(ttsUrl);
+            callTranslationAPI();
         }
     };
 
@@ -61,14 +94,15 @@ const Translation = () => {
         //         </Col>
         //     </Row>
         // </Container>
-        <Container>
-            <Row className="justify-content-md-center m-3">
+        <Container className="container" style={{ width: 800}}>
+            <Row className="justify-content-md-center m-3 p-2" style={{ backgroundColor: '#D3D3D3', borderRadius: 5}}>
                 <Col>
 
-                    <Form>
-                        <Form.Group as={Row} controlId="languageDropdown">
-                            <Form.Label column sm={2}>
-                                Select Language:
+                    <Form >
+                        <Form.Group as={Row} controlId="languageDropdown" style={{ paddingLeft: 35, paddingRight: 35
+                        }}>
+                            <Form.Label column sm={3}>
+                                Language:
                             </Form.Label>
                             <Col sm={6}>
                                 <DropdownButton
@@ -84,8 +118,8 @@ const Translation = () => {
                                 </DropdownButton>
                             </Col>
                         </Form.Group>
-                        <Form.Group as={Row} controlId="inputText">
-                            <Form.Label column sm={2}>
+                        <Form.Group as={Row} controlId="inputText" style={{ paddingLeft: 35, paddingRight: 35}}>
+                            <Form.Label column sm={3}>
                                 Enter Text:
                             </Form.Label>
                             <Col>
@@ -98,8 +132,8 @@ const Translation = () => {
                                 />
                             </Col>
                         </Form.Group>
-                        <Form.Group as={Row}>
-                            <Col sm={{ span: 10, offset: 2 }}>
+                        <Form.Group as={Row} style={{ paddingLeft: 35, paddingRight: 35}}>
+                            <Col sm={{ span: 10, offset: 6 }}>
                                 <Button variant="primary" onClick={handleTranslate} style={{ marginTop: 10 }}>
                                     Translate
                                 </Button>
@@ -110,7 +144,7 @@ const Translation = () => {
             </Row>
             <Row className="justify-content-md-center m-3">
                 <Col>
-                    <Form.Group controlId="outputText">
+                    <Form.Group controlId="outputText" style={{ paddingLeft: 35, paddingRight: 35}}>
                         <Form.Label>Translated Text:</Form.Label>
                         <FormControl as="textarea" rows={3} value={outputText} readOnly />
                     </Form.Group>
@@ -122,7 +156,7 @@ const Translation = () => {
                         )}
 
                         {segmentation && (
-                            <div>Segmentation: &nbsp;
+                            <div>Sentiment Anaysis: &nbsp;
                                 <Badge pill bg="primary">
                                     {segmentation}
                                 </Badge>
