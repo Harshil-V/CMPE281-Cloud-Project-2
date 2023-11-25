@@ -6,7 +6,7 @@ import { Card, Button, Form, Container, Row, Col, Pagination, Badge } from 'reac
 const ImageGallery = () => {
     const [images, setImages] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [imagesPerPage] = useState(9);
+    const [imagesPerPage] = useState(8);
     const [filter, setFilter] = useState('');
     const [newImage, setNewImage] = useState(null);
 
@@ -15,7 +15,7 @@ const ImageGallery = () => {
         const generateMockData = () => {
             const mockData = [];
 
-            for (let i = 1; i <= 30; i++) {
+            for (let i = 1; i <= 32; i++) {
                 mockData.push({
                     id: i,
                     url: `https://via.placeholder.com/300?text=Image${i}`,
