@@ -1,7 +1,8 @@
 // ImageGallery.js
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 import { Card, Button, Form, Container, Row, Col, Pagination, Badge } from 'react-bootstrap';
+import { Auth } from 'aws-amplify';
 
 const ImageGallery = () => {
     const [images, setImages] = useState([]);
@@ -9,8 +10,20 @@ const ImageGallery = () => {
     const [imagesPerPage] = useState(8);
     const [filter, setFilter] = useState('');
     const [newImage, setNewImage] = useState(null);
+    const [authUser, setAuthUser] = useState("");
 
     useEffect(() => {
+
+        Auth.currentAuthenticatedUser({
+            bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
+        }).then(user => {
+            // console.log(user)
+            setAuthUser(user.username)
+        }).catch(err => {
+            console.log(err)
+        });
+
+
         // Fake mock data for testing
         const generateMockData = () => {
             const mockData = [];
@@ -56,21 +69,23 @@ const ImageGallery = () => {
 
         const formData = new FormData();
         formData.append('image', newImage);
+        formData.append('user_name', authUser);
+        console.log(formData.get('image'));
+        console.log(formData.get('user_name'));
+        // try {
+        //     const response = await axios.post('https://your-api-endpoint.com/upload', formData, {
+        //         headers: {
+        //             'Content-Type': 'multipart/form-data',
+        //         },
+        //     });
 
-        try {
-            const response = await axios.post('https://your-api-endpoint.com/upload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-
-            // Assuming the server responds with the new image data
-            const newImageData = response.data;
-            setImages([...images, newImageData]);
-            setNewImage(null); // Clear the file input after a successful upload
-        } catch (error) {
-            console.error('Error uploading image:', error);
-        }
+        //     // Assuming the server responds with the new image data
+        //     const newImageData = response.data;
+        //     setImages([...images, newImageData]);
+        //     setNewImage(null); // Clear the file input after a successful upload
+        // } catch (error) {
+        //     console.error('Error uploading image:', error);
+        // }
     };
 
     const handleFileChange = (e) => {
@@ -83,8 +98,17 @@ const ImageGallery = () => {
         }
     };
 
+    const handleDeleteConfirmation = (id) => {
+        const isConfirmed = window.confirm('Are you sure you want to delete this image?');
+        
+        if (isConfirmed) {
+          handleDelete(id);
+        }
+      };
+
     return (
         <Container className='mt-4'>
+            <h1>Image Gallary</h1>
 
             <Row>
                 <Col className='mb-3'>
@@ -128,12 +152,12 @@ const ImageGallery = () => {
 
                                 <div className="tags mb-2" >
                                     {image.tags.map(tag => (
-                                        <Badge key={tag} variant="secondary" style={{marginRight: 5}}>
+                                        <Badge key={tag} variant="secondary" style={{ marginRight: 5 }}>
                                             {tag}
                                         </Badge>
                                     ))}
                                 </div>
-                                <Button variant="danger" onClick={() => handleDelete(image.id)}>Delete</Button>
+                                <Button variant="danger" onClick={() => handleDeleteConfirmation(image.id)}>Delete</Button>
                             </Card.Body>
                         </Card>
                     </Col>
@@ -143,6 +167,7 @@ const ImageGallery = () => {
             {/* Pagination */}
             <center>
                 <Pagination>
+
                     {Array.from({ length: Math.ceil(images.length / imagesPerPage) }).map((_, index) => (
                         <Pagination.Item
                             key={index + 1}
@@ -152,14 +177,9 @@ const ImageGallery = () => {
                             {index + 1}
                         </Pagination.Item>
                     ))}
+
                 </Pagination>
             </center>
-            {/* 
-            <Row className="justify-content-center">
-                <center>
-                    
-                </center>
-            </Row> */}
 
         </Container>
     );
