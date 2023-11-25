@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const Translation = () => {
     const [selectLanguageCode, setSelectedLanguageCode] = useState('');
-    const [selectedLanguage, setSelectedLanguage] = useState(''); // Default language is English
+    const [selectedLanguage, setSelectedLanguage] = useState('');
     const [inputText, setInputText] = useState('');
     const [outputText, setOutputText] = useState('');
     const [audioUrl, setAudioUrl] = useState('');
@@ -23,9 +23,9 @@ const Translation = () => {
         console.log(`Text: ${inputText}`)
         console.log(`Code: ${selectLanguageCode}`)
         // setSegmentation('');
-        // setAudioUrl('');
+        setAudioUrl('');
         try {
-            const response = await axios.post("http://34.213.200.68:80/translate/", {
+            const response = await axios.post("http://translateapi-2036624284.us-west-2.elb.amazonaws.com/translate/", {
                 text: inputText,
                 language: selectLanguageCode
             });

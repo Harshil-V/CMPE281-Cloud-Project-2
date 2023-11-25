@@ -50,8 +50,8 @@ function NavigationBar() {
                     </Nav>
                     <Nav>
                         <Nav.Link>User: {authUser}</Nav.Link>
-                        <Nav.Link style={{ color: 'red' }} onClick={signOut}>
-                            Logout
+                        <Nav.Link style={{ color: 'white', backgroundColor: "darkred", borderRadius: 10 }} onClick={signOut}>
+                            Log Out
                         </Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
