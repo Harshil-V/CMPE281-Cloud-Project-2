@@ -1,7 +1,7 @@
 // ImageGallery.js
 import { useState, useEffect } from 'react';
 // import axios from 'axios';
-import { Card, Button, Form, Container, Row, Col, Pagination, Badge } from 'react-bootstrap';
+import { Card, Button, Form, Container, Row, Col, Pagination, Badge, Modal } from 'react-bootstrap';
 import { Auth } from 'aws-amplify';
 
 const ImageGallery = () => {
@@ -11,6 +11,9 @@ const ImageGallery = () => {
     const [filter, setFilter] = useState('');
     const [newImage, setNewImage] = useState(null);
     const [authUser, setAuthUser] = useState("");
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [imageToDelete, setImageToDelete] = useState(null);
+
 
     useEffect(() => {
 
@@ -51,15 +54,28 @@ const ImageGallery = () => {
 
     const paginate = pageNumber => setCurrentPage(pageNumber);
 
-    const handleDelete = (id) => {
-        // Implement the logic to delete the image with the given id
+    const handleDelete = () => {
+        // Implement the logic to delete the image with the given ID
         // You may need to make an API request to delete the image on the server
         // and then update the local state
         // For simplicity, let's assume that there's a deleteImage function
         // that deletes the image from the state
-        const updatedImages = images.filter(image => image.id !== id);
+        const updatedImages = images.filter(image => image.id !== imageToDelete);
         setImages(updatedImages);
+
+        // Close the confirmation modal
+        closeConfirmationModal();
     };
+
+    // const handleDelete = (id) => {
+    //     // Implement the logic to delete the image with the given id
+    //     // You may need to make an API request to delete the image on the server
+    //     // and then update the local state
+    //     // For simplicity, let's assume that there's a deleteImage function
+    //     // that deletes the image from the state
+    //     const updatedImages = images.filter(image => image.id !== id);
+    //     setImages(updatedImages);
+    // };
 
     const handleImageUpload = async () => {
         if (!newImage) {
@@ -87,6 +103,16 @@ const ImageGallery = () => {
         //     console.error('Error uploading image:', error);
         // }
     };
+    const openConfirmationModal = (id) => {
+        setImageToDelete(id);
+        setShowConfirmation(true);
+    };
+
+    const closeConfirmationModal = () => {
+        setImageToDelete(null);
+        setShowConfirmation(false);
+    };
+
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
@@ -98,13 +124,13 @@ const ImageGallery = () => {
         }
     };
 
-    const handleDeleteConfirmation = (id) => {
-        const isConfirmed = window.confirm('Are you sure you want to delete this image?');
-        
-        if (isConfirmed) {
-          handleDelete(id);
-        }
-      };
+    // const handleDeleteConfirmation = (id) => {
+    //     const isConfirmed = window.confirm('Are you sure you want to delete this image?');
+
+    //     if (isConfirmed) {
+    //         handleDelete(id);
+    //     }
+    // };
 
     return (
         <Container className='mt-4'>
@@ -157,7 +183,10 @@ const ImageGallery = () => {
                                         </Badge>
                                     ))}
                                 </div>
-                                <Button variant="danger" onClick={() => handleDeleteConfirmation(image.id)}>Delete</Button>
+                                <Button variant="danger" onClick={() => openConfirmationModal(image.id)}>
+                                    Delete
+                                </Button>
+
                             </Card.Body>
                         </Card>
                     </Col>
@@ -181,6 +210,22 @@ const ImageGallery = () => {
                 </Pagination>
             </center>
 
+            <Modal show={showConfirmation} onHide={closeConfirmationModal} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirmation</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Are you sure you want to delete this image?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={closeConfirmationModal}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={handleDelete}>
+                        Delete
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </Container>
     );
 };
