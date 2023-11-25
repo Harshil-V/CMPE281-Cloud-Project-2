@@ -8,6 +8,7 @@ import awsExports from './aws-exports'
 import '@aws-amplify/ui-react/styles.css'
 import { BrowserRouter , Route, Routes } from 'react-router-dom';
 import Translate from './components/Translate.jsx';
+import ImageGallery from './components/ImageGallary.jsx';
 
 Amplify.configure(awsExports);
 Auth.configure(awsExports)
@@ -19,6 +20,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 <Routes>
                     <Route path="/" exact element={<App />} />
                     <Route path="/app" element={<App />} />
+                    <Route path="/images" element={<ImageGallery />} />
                     <Route path="/translate" element={<Translate />} />
                 </Routes>
             </BrowserRouter>

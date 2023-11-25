@@ -1,4 +1,5 @@
-import Gallery from './components/Gallary'
+// import Gallery from './components/Gallary'
+import ImageGallery from './components/ImageGallary'
 import NavigationBar from './components/NavBar'
 
 
@@ -10,7 +11,7 @@ function App() {
         <NavigationBar />
       </div>
       <div>
-        <Gallery/>
+        <ImageGallery/>
       </div>
     </>
   )

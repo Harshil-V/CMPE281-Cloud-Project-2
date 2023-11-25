@@ -96,9 +96,9 @@ const Translation = () => {
         //         </Col>
         //     </Row>
         // </Container>
-        <Container className="container" style={{ width: 800, backgroundColor: 'grey', padding: 14 }} >
+        <Container className="container" style={{ width: 800, backgroundColor: 'grey', padding: 14, borderRadius: 5, marginTop: 25 }} >
             <center>
-                <h2 style={{ paddingLeft: 20, marginTop: 15 }}>Language Translation</h2>
+                <h2 style={{ paddingLeft: 20 }}>Language Translation</h2>
             </center>
             <Row className="justify-content-md-center m-3 p-2" style={{ backgroundColor: '#D3D3D3', borderRadius: 5 }}>
                 <Col>

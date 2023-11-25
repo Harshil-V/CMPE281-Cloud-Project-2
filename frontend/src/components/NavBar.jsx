@@ -28,9 +28,9 @@ function NavigationBar() {
 
 
     return (
-        <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">
+        <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary" data-bs-theme="dark">
             <Container>
-                <Navbar.Brand href="#home">Travel Diary</Navbar.Brand>
+                <Navbar.Brand href="/">Travel Diary</Navbar.Brand>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="me-auto">
