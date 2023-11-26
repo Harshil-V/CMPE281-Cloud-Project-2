@@ -55,6 +55,5 @@ public class AmazonConfig {
                 .withRegion(region)
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();
-
     }
 }

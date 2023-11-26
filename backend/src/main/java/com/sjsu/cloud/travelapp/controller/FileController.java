@@ -32,9 +32,9 @@ public class FileController {
 	}
 
 	@PostMapping(value= "/uploadTextractFile")
-	public ResponseEntity<String> uploadTextractFile(@RequestPart(value = "file") final MultipartFile multipartFile){
+	public ResponseEntity<List<String>> uploadTextractFile(@RequestPart(value = "file") final MultipartFile multipartFile){
 		System.out.println(multipartFile);
-		final String response = fileService.uploadTextractFile(multipartFile);;
+		final List<String> response = fileService.uploadTextractFile(multipartFile);;
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	

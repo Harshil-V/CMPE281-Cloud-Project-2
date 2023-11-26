@@ -61,8 +61,8 @@ public class FileService{
         }
     }
 
-	public String uploadTextractFile(final MultipartFile multipartFile) {
-		String analyzedText = null;
+	public List<String> uploadTextractFile(final MultipartFile multipartFile) {
+		List<String> analyzedText = new ArrayList<>();;
 		try {
 			final File file = convertMultiPartFileToFile(multipartFile);
 			analyzedText = analyzeTextractDocument(file);
@@ -74,28 +74,28 @@ public class FileService{
 		return analyzedText;
 	}
 
-	private String analyzeTextractDocument(File file) throws FileNotFoundException {
-
+	private List<String> analyzeTextractDocument(File file) throws FileNotFoundException {
 		ByteBuffer imageBytes;
 		try (InputStream inputStream = new FileInputStream(file)) {
 			imageBytes = ByteBuffer.wrap(IOUtils.toByteArray(inputStream));
 		} catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+			throw new RuntimeException(e);
+		}
 
-        AtomicReference<String> analyzedText = new AtomicReference<>("");
+		List<String> analyzedTextList = new ArrayList<>();
 		DetectDocumentTextRequest request = new DetectDocumentTextRequest()
-				.withDocument(new Document()
-						.withBytes(imageBytes));
+				.withDocument(new Document().withBytes(imageBytes));
 
 		DetectDocumentTextResult result = amazonTextract.detectDocumentText(request);
 		System.out.println(result);
 
-		result.getBlocks().forEach(block ->{
-			if(block.getBlockType().equals("LINE"))
-				analyzedText.set("Text is " + block.getText());
+		result.getBlocks().forEach(block -> {
+			if (block.getBlockType().equals("LINE")) {
+				analyzedTextList.add(block.getText());
+			}
 		});
-		return analyzedText.get();
+
+		return analyzedTextList;
 	}
     
     public void uploadFileDetails(FileEntity fileEntity) {
