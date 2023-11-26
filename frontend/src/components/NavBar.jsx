@@ -20,7 +20,7 @@ function NavigationBar() {
     Auth.currentAuthenticatedUser({
         bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
     }).then(user => {
-        // console.log(user)
+        console.log(user.attributes.email)
         setAuthUser(user.username)
     }).catch(err => {
         console.log(err)
@@ -50,7 +50,7 @@ function NavigationBar() {
                     </Nav>
                     <Nav>
                         <Nav.Link>User: {authUser}</Nav.Link>
-                        <Nav.Link style={{ color: 'white', backgroundColor: "darkred", borderRadius: 10 }} onClick={signOut}>
+                        <Nav.Link style={{  padding: 6, color: 'white', backgroundColor: "darkred", borderRadius: 10, width: 'fit-content' }} onClick={signOut}>
                             Log Out
                         </Nav.Link>
                     </Nav>

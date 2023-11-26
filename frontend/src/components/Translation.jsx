@@ -25,7 +25,7 @@ const Translation = () => {
         // setSegmentation('');
         setAudioUrl('');
         try {
-            const response = await axios.post("http://translateapi-2036624284.us-west-2.elb.amazonaws.com/translate/", {
+            const response = await axios.post("http://myalb-817413463.us-west-2.elb.amazonaws.com/translate/", {
                 text: inputText,
                 language: selectLanguageCode
             });

@@ -11,6 +11,7 @@ const ImageGallery = () => {
     const [filter, setFilter] = useState('');
     const [newImage, setNewImage] = useState(null);
     const [authUser, setAuthUser] = useState("");
+    const [authUserEmail, setAuthUserEmail] = useState("");
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [imageToDelete, setImageToDelete] = useState(null);
 
@@ -20,7 +21,8 @@ const ImageGallery = () => {
         Auth.currentAuthenticatedUser({
             bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
         }).then(user => {
-            // console.log(user)
+            // console.log(user.attributes.email)
+            setAuthUserEmail(user.attributes.email)
             setAuthUser(user.username)
         }).catch(err => {
             console.log(err)
@@ -78,7 +80,7 @@ const ImageGallery = () => {
     // };
 
     const handleImageUpload = async () => {
-        
+
         if (!newImage) {
             alert('Please select an image to upload.');
             return;
@@ -96,11 +98,20 @@ const ImageGallery = () => {
 
         const formData = new FormData();
         formData.append('image', newImage);
-        formData.append('user_name', authUser);
+        formData.append('fileName', newImage.name);
+        formData.append('userEmail', authUserEmail)
+        formData.append('userName', authUser);
         formData.append('description', description);
-        console.log(formData.get('image'));
-        console.log(formData.get('user_name'));
-        console.log(formData.get('description'));
+        formData.append('uploadDate', new Date());
+        formData.append('updateDate', new Date());
+        
+        console.log(newImage);
+        console.log(`fileName: ${formData.get('fileName')}`);
+        console.log(`description: ${formData.get('description')}`);
+        console.log(`userEmail: ${formData.get('userEmail')}`);
+        console.log(`userName: ${formData.get('userName')}`);
+        console.log(`uploadDate: ${formData.get('uploadDate')}`);
+        console.log(`updateDate: ${formData.get('updateDate')}`);
         // try {
         //     const response = await axios.post('https://your-api-endpoint.com/upload', formData, {
         //         headers: {
@@ -201,9 +212,11 @@ const ImageGallery = () => {
                                         Delete
                                     </DeleteButton>
                                     <Button className='mt-2' style={{ marginLeft: 5, backgroundColor: "#1DA1F2", borderColor: "#1DA1F2" }}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="" height="16" fill="currentColor" className="bi bi-twitter" viewBox="0 0 16 16">
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" fill='#ffffff'>
+
+                                        <path d="M307 34.8c-11.5 5.1-19 16.6-19 29.2v64H176C78.8 128 0 206.8 0 304C0 417.3 81.5 467.9 100.2 478.1c2.5 1.4 5.3 1.9 8.1 1.9c10.9 0 19.7-8.9 19.7-19.7c0-7.5-4.3-14.4-9.8-19.5C108.8 431.9 96 414.4 96 384c0-53 43-96 96-96h96v64c0 12.6 7.4 24.1 19 29.2s25 3 34.4-5.4l160-144c6.7-6.1 10.6-14.7 10.6-23.8s-3.8-17.7-10.6-23.8l-160-144c-9.4-8.5-22.9-10.6-34.4-5.4z" /></svg>{/* <svg xmlns="http://www.w3.org/2000/svg" width="" height="16" fill="currentColor" className="bi bi-twitter" viewBox="0 0 16 16">
                                             <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15" />
-                                        </svg>
+                                        </svg> */}
                                     </Button>
                                 </div>
 
