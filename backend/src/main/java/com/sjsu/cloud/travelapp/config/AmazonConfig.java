@@ -1,5 +1,9 @@
 package com.sjsu.cloud.travelapp.config;
 
+import com.amazonaws.services.rekognition.AmazonRekognition;
+import com.amazonaws.services.rekognition.AmazonRekognitionClientBuilder;
+import com.amazonaws.services.textract.AmazonTextract;
+import com.amazonaws.services.textract.AmazonTextractClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +30,27 @@ public class AmazonConfig {
     public AmazonS3 s3() {
         AWSCredentials awsCredentials = new BasicAWSCredentials(accessKeyId, secretAccessKey);
         return AmazonS3ClientBuilder
+                .standard()
+                .withRegion(region)
+                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+                .build();
+
+    }
+
+    @Bean
+    public AmazonTextract amazonTextract() {
+        AWSCredentials awsCredentials = new BasicAWSCredentials(accessKeyId, secretAccessKey);
+        return AmazonTextractClientBuilder
+                .standard()
+                .withRegion(region)
+                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+                .build();
+    }
+
+    @Bean
+    public AmazonRekognition amazonRekognition() {
+        AWSCredentials awsCredentials = new BasicAWSCredentials(accessKeyId, secretAccessKey);
+        return AmazonRekognitionClientBuilder
                 .standard()
                 .withRegion(region)
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))

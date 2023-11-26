@@ -24,8 +24,8 @@ public class FileEntity {
 	@Column(name="file_url")
 	private String fileURL;
 	
-	@Column(name="version")
-	private String version;
+	@Column(name="version_no")
+	private String versionNo;
 	
 	@Column(name="upload_date")
 	private String uploadDate;
@@ -45,19 +45,19 @@ public class FileEntity {
 	 * @param fileName
 	 * @param fileDesc
 	 * @param fileURL
-	 * @param version
+	 * @param versionNo
 	 * @param uploadDate
 	 * @param updateDate
 	 * @param userEmail
 	 */
-	public FileEntity(Long fileId, String fileName, String fileDesc, String fileURL, String version, String uploadDate,
+	public FileEntity(Long fileId, String fileName, String fileDesc, String fileURL, String versionNo, String uploadDate,
 					  String updateDate, String userEmail) {
 		super();
 		this.fileId = fileId;
 		this.fileName = fileName;
 		this.fileDesc = fileDesc;
 		this.fileURL = fileURL;
-		this.version = version;
+		this.versionNo = versionNo;
 		this.uploadDate = uploadDate;
 		this.updateDate = updateDate;
 		this.userEmail = userEmail;
@@ -66,7 +66,7 @@ public class FileEntity {
 	@Override
 	public String toString() {
 		return "FileEntity [fileId=" + fileId + ", fileName=" + fileName + ", fileDesc=" + fileDesc + ", fileURL="
-				+ fileURL + ", version=" + version + ", uploadDate=" + uploadDate + ", updateDate=" + updateDate
+				+ fileURL + ", version=" + versionNo + ", uploadDate=" + uploadDate + ", updateDate=" + updateDate
 				+ ", userEmail=" + userEmail + "]";
 	}
 
@@ -103,11 +103,11 @@ public class FileEntity {
 	}
 
 	public String getVersion() {
-		return version;
+		return versionNo;
 	}
 
 	public void setVersion(String version) {
-		this.version = version;
+		this.versionNo = version;
 	}
 
 	public String getUploadDate() {
