@@ -7,6 +7,11 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.textract.AmazonTextract;
+import com.amazonaws.services.textract.model.DetectDocumentTextRequest;
+import com.amazonaws.services.textract.model.DetectDocumentTextResult;
+import com.amazonaws.services.textract.model.Document;
+import com.amazonaws.util.IOUtils;
 import com.sjsu.cloud.travelapp.entity.FileEntity;
 import com.sjsu.cloud.travelapp.model.User;
 import com.sjsu.cloud.travelapp.repository.FileJPARepository;
@@ -20,12 +25,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @Transactional
@@ -33,6 +37,9 @@ public class FileService{
 	
 	@Autowired
     private AmazonS3 amazonS3;
+
+	@Autowired
+	private AmazonTextract amazonTextract;
 	
 	@Autowired
 	FileRepository fileRepository;
@@ -53,6 +60,43 @@ public class FileService{
         	System.out.println("Error= {} while uploading file."+ ex.getMessage());
         }
     }
+
+	public List<String> uploadTextractFile(final MultipartFile multipartFile) {
+		List<String> analyzedText = new ArrayList<>();;
+		try {
+			final File file = convertMultiPartFileToFile(multipartFile);
+			analyzedText = analyzeTextractDocument(file);
+			file.delete();
+			
+		} catch (final AmazonServiceException | FileNotFoundException ex) {
+			System.out.println("Error= {} while analyzing file." + ex.getMessage());
+		}
+		return analyzedText;
+	}
+
+	private List<String> analyzeTextractDocument(File file) throws FileNotFoundException {
+		ByteBuffer imageBytes;
+		try (InputStream inputStream = new FileInputStream(file)) {
+			imageBytes = ByteBuffer.wrap(IOUtils.toByteArray(inputStream));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		List<String> analyzedTextList = new ArrayList<>();
+		DetectDocumentTextRequest request = new DetectDocumentTextRequest()
+				.withDocument(new Document().withBytes(imageBytes));
+
+		DetectDocumentTextResult result = amazonTextract.detectDocumentText(request);
+		System.out.println(result);
+
+		result.getBlocks().forEach(block -> {
+			if (block.getBlockType().equals("LINE")) {
+				analyzedTextList.add(block.getText());
+			}
+		});
+
+		return analyzedTextList;
+	}
     
     public void uploadFileDetails(FileEntity fileEntity) {
         try {

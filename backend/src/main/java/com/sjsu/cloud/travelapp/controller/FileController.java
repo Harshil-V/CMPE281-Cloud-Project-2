@@ -1,5 +1,7 @@
 package com.sjsu.cloud.travelapp.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sjsu.cloud.travelapp.entity.FileEntity;
 import com.sjsu.cloud.travelapp.model.User;
 import com.sjsu.cloud.travelapp.service.FileService;
@@ -21,13 +23,20 @@ public class FileController {
 	private FileService fileService;
 
 	@PostMapping(value= "/uploadFile")
-    public ResponseEntity<String> uploadFile(@RequestPart(value = "file") final MultipartFile multipartFile){
+	public ResponseEntity<String> uploadFile(@RequestPart(value = "reqFileEntity") FileEntity reqFileEntity, @RequestPart(value = "file") final MultipartFile multipartFile) {
 		System.out.println(multipartFile);
 		fileService.uploadFile(multipartFile);
+		fileService.uploadFileDetails(reqFileEntity);
 		final String response = "[" + multipartFile.getOriginalFilename() + "] uploaded successfully.";
-        return new ResponseEntity<>(response, HttpStatus.OK);
-       
-    }
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+	@PostMapping(value= "/uploadTextractFile")
+	public ResponseEntity<List<String>> uploadTextractFile(@RequestPart(value = "file") final MultipartFile multipartFile){
+		System.out.println(multipartFile);
+		final List<String> response = fileService.uploadTextractFile(multipartFile);;
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 	
 	@PostMapping(value= "/uploadFileDetails")
     public ResponseEntity<String> uploadFileDetails(@RequestBody FileEntity fileEntity) {

@@ -128,3 +128,12 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+backend/src/main/resources/application.properties
+backend/.idea/aws.xml
+backend/.idea/compiler.xml
+backend/.idea/misc.xml
+backend/.idea/workspace.xml
+backend/.idea/encodings.xml
+backend/.idea/jarRepositories.xml
+backend/.idea/jpa-buddy.xml
+backend/.idea/vcs.xml
