@@ -10,5 +10,5 @@ import java.util.List;
 public interface FileRepository extends CrudRepository<FileEntity, String> {
 		void deleteByFileName(String fileName);
 		List findByUserEmail(String userEmail);
-		FileEntity findByFileId(Long fileId);
+		FileEntity findByFileName(String fileName);
 }

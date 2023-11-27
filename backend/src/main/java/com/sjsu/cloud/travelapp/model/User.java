@@ -1,7 +1,6 @@
 package com.sjsu.cloud.travelapp.model;
 
 public class User {
-	
 	private String userEmail;
     private String userFirstName;
     private String userLastName;
@@ -15,14 +14,14 @@ public class User {
 	 * @param userEmail
 	 * @param userFirstName
 	 * @param userLastName
-	 * @param password
+	 * @param userPassword
 	 */
-	public User(String userEmail, String userFirstName, String userLastName, String password) {
+	public User(String userEmail, String userFirstName, String userLastName, String userPassword) {
 		super();
 		this.userEmail = userEmail;
 		this.userFirstName = userFirstName;
 		this.userLastName = userLastName;
-		this.userPassword = password;
+		this.userPassword = userPassword;
 	}
 
 	public String getUserEmail() {
@@ -49,12 +48,12 @@ public class User {
 		this.userLastName = userLastName;
 	}
 
-	public String getPassword() {
+	public String getUserPassword() {
 		return userPassword;
 	}
 
-	public void setPassword(String password) {
-		this.userPassword = password;
+	public void setUserPassword(String userPassword) {
+		this.userPassword = userPassword;
 	}
 
 	@Override
@@ -62,6 +61,4 @@ public class User {
 		return "User [userEmail=" + userEmail + ", userFirstName=" + userFirstName + ", userLastName=" + userLastName
 				+ ", userPassword=" + userPassword + "]";
 	}
-	
-    
 }

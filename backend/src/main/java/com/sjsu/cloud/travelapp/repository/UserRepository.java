@@ -8,5 +8,4 @@ import com.sjsu.cloud.travelapp.entity.UserEntity;
 @Repository
 public interface UserRepository extends CrudRepository<UserEntity, String>{
 	UserEntity findByUserEmail(String userEmail);
-
 }

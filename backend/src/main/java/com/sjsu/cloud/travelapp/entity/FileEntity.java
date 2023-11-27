@@ -66,7 +66,7 @@ public class FileEntity {
 	@Override
 	public String toString() {
 		return "FileEntity [fileId=" + fileId + ", fileName=" + fileName + ", fileDesc=" + fileDesc + ", fileURL="
-				+ fileURL + ", version=" + versionNo + ", uploadDate=" + uploadDate + ", updateDate=" + updateDate
+				+ fileURL + ", versionNo=" + versionNo + ", uploadDate=" + uploadDate + ", updateDate=" + updateDate
 				+ ", userEmail=" + userEmail + "]";
 	}
 
@@ -102,12 +102,12 @@ public class FileEntity {
 		this.fileURL = fileURL;
 	}
 
-	public String getVersion() {
+	public String getVersionNo() {
 		return versionNo;
 	}
 
-	public void setVersion(String version) {
-		this.versionNo = version;
+	public void setVersionNo(String versionNo) {
+		this.versionNo = versionNo;
 	}
 
 	public String getUploadDate() {

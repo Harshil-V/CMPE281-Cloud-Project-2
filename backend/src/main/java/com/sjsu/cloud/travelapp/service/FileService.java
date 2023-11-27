@@ -18,6 +18,8 @@ import com.sjsu.cloud.travelapp.repository.FileJPARepository;
 import com.sjsu.cloud.travelapp.repository.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,52 +29,154 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @Transactional
-public class FileService{
-	
+public class FileService {
 	@Autowired
-    private AmazonS3 amazonS3;
+	private AmazonS3 amazonS3;
 
 	@Autowired
 	private AmazonTextract amazonTextract;
-	
+
 	@Autowired
 	FileRepository fileRepository;
-	
+
 	@Autowired
 	FileJPARepository fileJPARepository;
-	
-    @Value("${aws.s3.bucket}")
-    private String bucketName;
 
-    @Async
-    public void uploadFile(final MultipartFile multipartFile) {
-        try {
-            final File file = convertMultiPartFileToFile(multipartFile);
-            uploadFileToS3Bucket(bucketName, file);
-            file.delete();
-        } catch (final AmazonServiceException ex) {
-        	System.out.println("Error= {} while uploading file."+ ex.getMessage());
-        }
-    }
+	@Value("${aws.s3.bucket}")
+	private String bucketName;
 
-	public List<String> uploadTextractFile(final MultipartFile multipartFile) {
-		List<String> analyzedText = new ArrayList<>();;
+	@Value("${aws.cloudfront.distribution}")
+	private String cloudFrontURL;
+
+	@Async
+	public ResponseEntity<?> uploadFile(final MultipartFile multipartFile, FileEntity fileEntity) {
+		try {
+			final File file = convertMultiPartFileToFile(multipartFile);
+			String fileName = uploadFileToS3Bucket(bucketName, file);
+			fileEntity.setFileName(fileName);
+			fileEntity.setFileURL(cloudFrontURL+fileName);
+			file.delete();
+			fileRepository.save(fileEntity);
+			return new ResponseEntity<>("File uploaded successfully!", HttpStatus.OK);
+		} catch (final AmazonServiceException ex) {
+			System.out.println("Error while uploading file." + ex.getMessage());
+			return new ResponseEntity<>("An error occurred while uploading file.", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@Async
+	public ResponseEntity<?> uploadTextractFile(final MultipartFile multipartFile) {
+		List<String> analyzedText = new ArrayList<>();
 		try {
 			final File file = convertMultiPartFileToFile(multipartFile);
 			analyzedText = analyzeTextractDocument(file);
 			file.delete();
-			
+			return new ResponseEntity<>(analyzedText, HttpStatus.OK);
 		} catch (final AmazonServiceException | FileNotFoundException ex) {
-			System.out.println("Error= {} while analyzing file." + ex.getMessage());
+			System.out.println("Error while analyzing file." + ex.getMessage());
+			return new ResponseEntity<>("An error occurred while analyzing file.", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return analyzedText;
 	}
+
+	public ResponseEntity<?> downloadFileFromS3(String fileName) throws IOException {
+		S3Object fullObject = null;
+		try {
+			fullObject = amazonS3.getObject(new GetObjectRequest(bucketName, fileName));
+			System.out.println("Content-Type: " + fullObject.getObjectMetadata().getContentType());
+			InputStream in = fullObject.getObjectContent();
+			BufferedImage imageFromAWS = ImageIO.read(in);
+			String localFileName = fileName.substring(fileName.lastIndexOf(":") + 1);
+			File outputfile = new File("C:\\AWSFile\\" + localFileName);
+			ImageIO.write(imageFromAWS, "JPG", outputfile);
+			return new ResponseEntity<>("File downloaded successfully!", HttpStatus.OK);
+		} catch (AmazonServiceException e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("An error occurred while downloading file.", HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (SdkClientException e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("An error occurred while downloading file.", HttpStatus.INTERNAL_SERVER_ERROR);
+		} finally {
+			if (fullObject != null) {
+				fullObject.close();
+			}
+		}
+	}
+
+	public ResponseEntity<?> deleteFile(String fileName) {
+		try {
+			System.out.println(bucketName + " " + fileName);
+			amazonS3.deleteObject(new DeleteObjectRequest(bucketName, fileName));
+			fileRepository.deleteByFileName(fileName);
+			return new ResponseEntity<>("File deleted successfully!", HttpStatus.OK);
+		} catch (AmazonServiceException e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("An error occurred while deleting the file.", HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (SdkClientException e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("An error occurred while deleting the file.", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	public ResponseEntity<?> getAllFiles() {
+		try {
+			List<FileEntity> myFileList = new ArrayList<>();
+			fileRepository.findAll().forEach(myFileList::add);
+			return new ResponseEntity<>(myFileList, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("An error occurred while fetching all files.", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	public ResponseEntity<?> getUserFilesDetails(User user) {
+		try {
+			List myFileList = new ArrayList<FileEntity>();
+			fileRepository.findByUserEmail(user.getUserEmail()).forEach(myFileList::add);
+			return new ResponseEntity<>(myFileList, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("An error occurred while fetching user files.", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	public ResponseEntity<?> getFileDetailsById(String fileName) {
+		try {
+			return new ResponseEntity<>(fileRepository.findByFileName(fileName), HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("An error occurred while fetching file details.", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	public ResponseEntity<?> updateFileDetails(FileEntity fileEntity) {
+		try {
+			System.out.println(fileEntity.getFileId());
+			fileJPARepository.updateFileDetails(fileEntity.getFileId(), fileEntity.getFileName(), fileEntity.getFileDesc(),
+					fileEntity.getFileURL(), fileEntity.getVersionNo(), fileEntity.getUpdateDate(), fileEntity.getUserEmail());
+			return new ResponseEntity<>("File details updated successfully!", HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("An error occurred while updating file details.", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	public ResponseEntity<?> updateFileDate(FileEntity fileEntity) {
+		try {
+			fileJPARepository.updateFileDate(fileEntity.getFileId(), fileEntity.getUpdateDate());
+			return new ResponseEntity<>("File details updated successfully!", HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("An error occurred while updating file details.", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// Supporting methods below
 
 	private List<String> analyzeTextractDocument(File file) throws FileNotFoundException {
 		ByteBuffer imageBytes;
@@ -94,93 +198,23 @@ public class FileService{
 				analyzedTextList.add(block.getText());
 			}
 		});
-
 		return analyzedTextList;
 	}
-    
-    public void uploadFileDetails(FileEntity fileEntity) {
-        try {
-           fileRepository.save(fileEntity);
-        } catch (final AmazonServiceException ex) {
-        	System.out.println("Error= {} while uploading file."+ ex.getMessage());
-        }
-    }
- 
-    private File convertMultiPartFileToFile(final MultipartFile multipartFile) {       
-    	final File file = new File(multipartFile.getOriginalFilename());
-        try (final FileOutputStream outputStream = new FileOutputStream(file)) {
-            outputStream.write(multipartFile.getBytes());
-        } catch (final IOException ex) {
-        	System.out.println("Error converting the multi-part file to file= "+ ex.getMessage());
-        }
-        return file;
-    }
- 
-    private void uploadFileToS3Bucket(final String bucketName, final File file) {
-       // final String uniqueFileName = LocalDateTime.now() + "_" + file.getName();
-    	final String uniqueFileName = file.getName();
-        final PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, uniqueFileName, file);
-        amazonS3.putObject(putObjectRequest);
-    }
-    
-    public void downloadFileFromS3(String fileName) throws IOException {
-    	 S3Object fullObject = null;
-	    try {	    	
-	    	 fullObject = amazonS3.getObject(new GetObjectRequest(bucketName, fileName));
-	         System.out.println("Content-Type: " + fullObject.getObjectMetadata().getContentType());
-	         InputStream in = fullObject.getObjectContent();
-	         BufferedImage imageFromAWS = ImageIO.read(in);
-	         File outputfile = new File("C:\\AWSFile\\downloads" +
-					 "_"+fileName);
-	         ImageIO.write(imageFromAWS, "JPG", outputfile );	         
-	    } catch (AmazonServiceException e) {
-	        e.printStackTrace();
-	    } catch (SdkClientException e) {
-	        e.printStackTrace();
-	    } finally {
-	        if (fullObject != null) {
-	            fullObject.close();
-	        }
-	    }
-    }
-    
-    public void deleteFile(String fileName) {
-    	System.out.println(bucketName +" "+fileName);
-    	amazonS3.deleteObject(new DeleteObjectRequest(bucketName, fileName));
-    	fileRepository.deleteByFileName(fileName);
-    }
 
-	public List viewAllFiles(User user) {
-		List myFileList = new ArrayList<FileEntity>();
-		fileRepository.findAll().forEach(myFileList::add);
-		return myFileList;
-	}
-	
-	public List viewMyFiles(User user) {
-		List myFileList = new ArrayList<FileEntity>();		
-		fileRepository.findByUserEmail(user.getUserEmail()).forEach(myFileList::add);
-		return myFileList;
+	private File convertMultiPartFileToFile(final MultipartFile multipartFile) {
+		final File file = new File(multipartFile.getOriginalFilename());
+		try (final FileOutputStream outputStream = new FileOutputStream(file)) {
+			outputStream.write(multipartFile.getBytes());
+		} catch (final IOException ex) {
+			System.out.println("Error converting the multi-part file to file= " + ex.getMessage());
+		}
+		return file;
 	}
 
-	public FileEntity getMyUserFileDetails(Long fileId) {
-		FileEntity entity = new FileEntity();
-		entity = fileRepository.findByFileId(fileId);
-		return entity;
-	}
-
-	public void updateFileAbout(FileEntity fileEntity) {
-		System.out.println(fileEntity.getFileId());
-		fileJPARepository.updateFileAbout(fileEntity.getFileId(), fileEntity.getUpdateDate(),
-				fileEntity.getFileDesc(), fileEntity.getFileName(), fileEntity.getFileURL());		
-	}
-
-	public void updateFileDetail(FileEntity fileEntity) {
-		fileJPARepository.updateFileDetail(fileEntity.getFileId(),fileEntity.getUpdateDate());
-	}
-
-	public List<FileEntity> getAllFiles() {
-		List myFileList = new ArrayList<FileEntity>();
-		fileRepository.findAll().forEach(myFileList::add);
-		return myFileList;
+	private String uploadFileToS3Bucket(final String bucketName, final File file) {
+		final String uniqueFileName = LocalDateTime.now() + "_" + file.getName();
+		final PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, uniqueFileName, file);
+		amazonS3.putObject(putObjectRequest);
+		return uniqueFileName;
 	}
 }
