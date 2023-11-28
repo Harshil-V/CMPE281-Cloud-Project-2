@@ -1,20 +1,14 @@
 package com.sjsu.cloud.travelapp.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "file")
 public class FileEntity {
+
 	@Id
-	@Column(name="file_id")
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long fileId;
-	
 	@Column(name="file_name")
 	private String fileName;
 	
@@ -36,6 +30,14 @@ public class FileEntity {
 	@Column(name="user_email")
 	private String userEmail;
 
+	@ManyToMany
+	@JoinTable(
+			name = "file_tag",
+			joinColumns = @JoinColumn(name = "file_name"),
+			inverseJoinColumns = @JoinColumn(name = "tag_id")
+	)
+	private Set<TagEntity> tags;
+
 	public FileEntity() {
 		super();
 	}
@@ -49,11 +51,11 @@ public class FileEntity {
 	 * @param uploadDate
 	 * @param updateDate
 	 * @param userEmail
+	 * @param tags
 	 */
 	public FileEntity(Long fileId, String fileName, String fileDesc, String fileURL, String versionNo, String uploadDate,
-					  String updateDate, String userEmail) {
+					  String updateDate, String userEmail, Set<TagEntity> tags) {
 		super();
-		this.fileId = fileId;
 		this.fileName = fileName;
 		this.fileDesc = fileDesc;
 		this.fileURL = fileURL;
@@ -61,21 +63,14 @@ public class FileEntity {
 		this.uploadDate = uploadDate;
 		this.updateDate = updateDate;
 		this.userEmail = userEmail;
+		this.tags = tags;
 	}
 
 	@Override
 	public String toString() {
-		return "FileEntity [fileId=" + fileId + ", fileName=" + fileName + ", fileDesc=" + fileDesc + ", fileURL="
+		return "FileEntity [fileName=" + fileName + ", fileDesc=" + fileDesc + ", fileURL="
 				+ fileURL + ", versionNo=" + versionNo + ", uploadDate=" + uploadDate + ", updateDate=" + updateDate
 				+ ", userEmail=" + userEmail + "]";
-	}
-
-	public Long getFileId() {
-		return fileId;
-	}
-
-	public void setFileId(Long fileId) {
-		this.fileId = fileId;
 	}
 
 	public String getFileName() {
@@ -132,5 +127,13 @@ public class FileEntity {
 
 	public void setUserEmail(String userEmail) {
 		this.userEmail = userEmail;
+	}
+
+	public Set<TagEntity> getTags() {
+		return tags;
+	}
+
+	public void setTags(Set<TagEntity> tags) {
+		this.tags = tags;
 	}
 }
