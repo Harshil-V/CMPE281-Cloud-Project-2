@@ -124,7 +124,7 @@ const Translation = () => {
                                     <Dropdown.Item eventKey="German" onClick={() => handleLanguageChange('de', 'German')}>German</Dropdown.Item>
                                     <Dropdown.Item eventKey="Italian" onClick={() => handleLanguageChange('it', 'Italian')}>Italian</Dropdown.Item>
                                     <Dropdown.Item eventKey="Japanese" onClick={() => handleLanguageChange('ja', 'Japanese')}>Japanese</Dropdown.Item>
-                                    <Dropdown.Item eventKey="Hindi" onClick={() => handleLanguageChange('hi', 'Hindi')}>Hindi</Dropdown.Item>
+                                    {/* <Dropdown.Item eventKey="Hindi" onClick={() => handleLanguageChange('hi', 'Hindi')}>Hindi</Dropdown.Item> */}
                                     {/* Add more language options as needed */}
                                 </DropdownButton>
                             </Col>
