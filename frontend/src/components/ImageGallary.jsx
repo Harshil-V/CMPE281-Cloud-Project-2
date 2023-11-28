@@ -152,17 +152,37 @@ const ImageGallery = () => {
 
     const paginate = pageNumber => setCurrentPage(pageNumber);
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
+
+        try {
+            const response = await axios.delete(`http://35.165.94.33:8080/file/delete/${imageToDelete}`);
+
+            // Log the response to the console
+            console.log('Delete Image Response:', response);
+
+            // Update the local state by filtering out the deleted image
+            const updatedImages = images.filter((image) => image.fileName !== imageToDelete);
+            setImages(updatedImages);
+
+            // Close the confirmation modal
+            closeConfirmationModal();
+        } catch (error) {
+            console.error('Error deleting image:', error);
+
+            // Handle error, e.g., show a notification to the user
+            // You might want to reset the imageToDelete state or take other actions based on your application logic
+        }
+        // http://35.165.94.33:8080/file/delete/
         // Implement the logic to delete the image with the given ID
         // You may need to make an API request to delete the image on the server
         // and then update the local state
         // For simplicity, let's assume that there's a deleteImage function
         // that deletes the image from the state
-        const updatedImages = images.filter(image => image.id !== imageToDelete);
-        setImages(updatedImages);
+        // const updatedImages = images.filter(image => image.fileName !== imageToDelete);
+        // setImages(updatedImages);
 
-        // Close the confirmation modal
-        closeConfirmationModal();
+        // // Close the confirmation modal
+        // closeConfirmationModal();
     };
 
     // const handleDelete = (id) => {
@@ -332,11 +352,11 @@ const ImageGallery = () => {
                 {currentImages.map((image, i) => (
                     <Col key={i} xs={12} sm={6} md={4} lg={3} className="mb-4">
                         <Card className="image-card">
-                            <Card.Img variant="top" src={image.fileURL} alt={`Image ${image.fileName}`} loading='lazy' style={{ width: '100%', height: '14vw', objectFit: 'cover'}}/>
+                            <Card.Img variant="top" src={image.fileURL} alt={`Image ${image.fileName}`} loading='lazy' style={{ width: '100%', height: '15vw', objectFit: 'cover' }} />
                             <Card.Body>
 
                                 <div className="tags mb-2">
-                                    {image.tags && Array.isArray(image.tags) && image.tags.slice(0, 4).map((tag, i) => (
+                                    {image.tags && Array.isArray(image.tags) && image.tags.slice(0, 3).map((tag, i) => (
                                         <Badge key={i} variant="secondary" style={{ marginRight: 5, padding: 8 }}>
                                             {tag.tagName}
                                         </Badge>
