@@ -20,17 +20,23 @@ public class FileController {
 	private FileService fileService;
 
 	@PostMapping(value= "/uploadFile")
-	public ResponseEntity<?> uploadFile(@RequestPart(value = "fileEntity") FileEntity fileEntity,
+	public ResponseEntity<?> uploadFile(@RequestPart(value = "fileDesc") String fileDesc,
+										@RequestPart(value = "versionNo") String versionNo,
+										@RequestPart(value = "userEmail") String userEmail,
 										@RequestPart(value = "file") final MultipartFile multipartFile) {
+		FileEntity fileEntity = new FileEntity();
+		fileEntity.setFileDesc(fileDesc);
+		fileEntity.setVersionNo(versionNo);
+		fileEntity.setUserEmail(userEmail);
 		return fileService.uploadFile(multipartFile, fileEntity);
 	}
 
-	@PostMapping(value= "/uploadTextractFile")
+	@GetMapping(value= "/uploadTextractFile")
 	public ResponseEntity<?> uploadTextractFile(@RequestPart(value = "file") final MultipartFile multipartFile) {
 		return fileService.uploadTextractFile(multipartFile);
 	}
 	
-	@RequestMapping(value="/download/{fileName}")
+	@GetMapping(value="/download/{fileName}")
     public ResponseEntity<?> downloadFile(@PathVariable("fileName") String fileName) {
 		try {
 			return fileService.downloadFileFromS3(fileName);
@@ -40,37 +46,37 @@ public class FileController {
 		}
     }
 	
-	@RequestMapping(value="/delete/{fileName}")
+	@DeleteMapping(value="/delete/{fileName}")
     public ResponseEntity<?> deleteFile(@PathVariable("fileName") String fileName) {
 		return fileService.deleteFile(fileName);
 	}
 	
-	@RequestMapping(value="/getAllFiles")
+	@GetMapping(value="/getAllFiles")
 	public ResponseEntity<?> getAllFiles() throws IOException {
 		return fileService.getAllFiles();
     }
 	
-	@RequestMapping(value="/getUserFilesDetails")
-    public ResponseEntity<?> getUserFiles(@RequestBody User user) throws IOException {
-		return fileService.getUserFilesDetails(user);
+	@GetMapping(value="/getUserFilesDetails/{userEmail}")
+    public ResponseEntity<?> getUserFiles(@PathVariable("userEmail") String userEmail) throws IOException {
+		return fileService.getUserFilesDetails(userEmail);
     }
 
-	@RequestMapping(value="/getFileDetailsById/{fileName}")
+	@GetMapping(value="/getFileDetailsById/{fileName}")
     public ResponseEntity<?> getFileDetailsById(@PathVariable("fileName") String fileName) throws IOException {
 		return fileService.getFileDetailsById(fileName);
     }
 
-	@RequestMapping(value="/updateFileDetails")
+	@PostMapping(value="/updateFileDetails")
     public ResponseEntity<?> updateFileDetails(@RequestBody FileEntity fileEntity) throws IOException {
 		return fileService.updateFileDetails(fileEntity);
     }
 	
-	@RequestMapping(value="/updateFileDate")
+	@PostMapping(value="/updateFileDate")
     public ResponseEntity<?> updateFileDate(@RequestBody FileEntity fileEntity) throws IOException {
 		return fileService.updateFileDate(fileEntity);
     }
 
-	@RequestMapping(value="/welcome")
+	@GetMapping(value="/welcome")
     public @ResponseBody String defaultPage() {
 		return "Welcome to Travel App!";
     }

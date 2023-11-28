@@ -13,11 +13,10 @@ import com.sjsu.cloud.travelapp.entity.FileEntity;
 public interface FileJPARepository extends JpaRepository<FileEntity, Long> {
 	@Transactional
 	@Modifying
-	@Query("UPDATE FileEntity fe SET fe.fileName = :fileName, fe.fileDesc = :fileDesc, " +
+	@Query("UPDATE FileEntity fe SET fe.fileDesc = :fileDesc, " +
 			"fe.fileURL = :fileURL, fe.versionNo = :versionNo, fe.updateDate = :updateDate, " +
-			"fe.userEmail = :userEmail WHERE fe.fileId = :fileId")
-	void updateFileDetails(@Param(value = "fileId") Long fileId,
-							  @Param(value = "fileName") String fileName,
+			"fe.userEmail = :userEmail WHERE fe.fileName = :fileName")
+	void updateFileDetails(@Param(value = "fileName") String fileName,
 							  @Param(value = "fileDesc") String fileDesc,
 							  @Param(value = "fileURL") String fileURL,
 							  @Param(value = "versionNo") String versionNo,
@@ -26,7 +25,7 @@ public interface FileJPARepository extends JpaRepository<FileEntity, Long> {
 
 	@Transactional
 	@Modifying
-	@Query("UPDATE FileEntity fe SET  fe.updateDate = :updateDate WHERE fe.fileId = :fileId")
-	void updateFileDate(@Param(value = "fileId") Long fileId,
+	@Query("UPDATE FileEntity fe SET  fe.updateDate = :updateDate WHERE fe.fileName = :fileName")
+	void updateFileDate(@Param(value = "fileName") String fileName,
 			  			@Param(value = "updateDate") String updateDate);
 }
