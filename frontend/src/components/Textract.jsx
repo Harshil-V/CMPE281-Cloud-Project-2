@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Container, Form, Button, ListGroup, Card } from 'react-bootstrap';
+import { Container, Form, Button, Card } from 'react-bootstrap';
 import axios from 'axios';
 
 const baseURL = "http://travelapplicationelb-719830694.us-west-2.elb.amazonaws.com:8080";
@@ -7,9 +7,11 @@ const baseURL = "http://travelapplicationelb-719830694.us-west-2.elb.amazonaws.c
 const Textract = () => {
     const [file, setFile] = useState(null);
     const [responseList, setResponseList] = useState([]);
+    const [copied, setCopied] = useState(false);
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
+        setResponseList([]); // Clear response list when a new file is selected
     };
 
     const handleUpload = async () => {
@@ -38,12 +40,20 @@ const Textract = () => {
 
     const handleClear = () => {
         setFile(null);
-        setResponseList([]); // Clear the response list
+        setResponseList([]);
+        setCopied(false); // Reset the copied state
+    };
+
+    const handleCopy = () => {
+        const textarea = document.getElementById('responseTextArea');
+        textarea.select();
+        document.execCommand('copy');
+        setCopied(true);
     };
 
     return (
         <Container className='mt-4'>
-            <h1>File Upload Page</h1>
+            <h1>Extract Text From Images</h1>
             <Form>
                 <Form.Group controlId="formFile" className="mb-3">
                     <Form.Label>Select a file</Form.Label>
@@ -69,13 +79,26 @@ const Textract = () => {
             )}
 
             {responseList.length > 0 && (
-                <div className='mt-4'>
-                    <h2>Response List</h2>
-                    <ListGroup>
-                        {responseList.map((item, index) => (
-                            <ListGroup.Item key={index}>{item}</ListGroup.Item>
-                        ))}
-                    </ListGroup>
+                <div className="mt-4">
+                    <h2>Text Extraction (OCR)</h2>
+
+                    <Form.Group controlId="responseTextArea" className="mt-4">
+                        <Form.Label>Response Text</Form.Label>
+                        <Form.Control
+                            as="textarea"
+                            rows={responseList.length}
+                            value={responseList.join('\n')}
+                            readOnly
+                        />
+                        <Button
+                            variant="primary"
+                            onClick={handleCopy}
+                            className="mt-2"
+                            disabled={responseList.length === 0 || copied}
+                        >
+                            {copied ? 'Copied!' : 'Copy'}
+                        </Button>
+                    </Form.Group>
                 </div>
             )}
         </Container>

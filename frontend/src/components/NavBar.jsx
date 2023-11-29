@@ -36,6 +36,7 @@ function NavigationBar() {
                     <Nav className="me-auto">
                         <Nav.Link href="/">Images</Nav.Link>
                         <Nav.Link href="/translate">Translate</Nav.Link>
+                        <Nav.Link href="/textract">OCR</Nav.Link>
                         {/* <NavDropdown title="Dropdown" id="collapsible-nav-dropdown">
                             <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
                             <NavDropdown.Item href="#action/3.2">
