@@ -31,7 +31,7 @@ public class FileController {
 		return fileService.uploadFile(multipartFile, fileEntity);
 	}
 
-	@GetMapping(value= "/uploadTextractFile")
+	@PostMapping(value= "/uploadTextractFile")
 	public ResponseEntity<?> uploadTextractFile(@RequestPart(value = "file") final MultipartFile multipartFile) {
 		return fileService.uploadTextractFile(multipartFile);
 	}
