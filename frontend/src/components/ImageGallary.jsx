@@ -4,6 +4,8 @@ import { Card, Button, Form, Container, Row, Col, Pagination, Badge, Modal } fro
 import { Auth } from 'aws-amplify';
 import DeleteButton from './DeleteButton';
 
+const baseURL = "http://travelapplicationelb-719830694.us-west-2.elb.amazonaws.com:8080";
+
 const ImageGallery = () => {
     const [images, setImages] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -78,7 +80,7 @@ const ImageGallery = () => {
 
         const fetchData = async () => {
             if (authUserEmail && authUser) {
-                const endpoint = `http://35.165.94.33:8080/file/getUserFilesDetails/${authUserEmail}`;
+                const endpoint = `${baseURL}/file/getUserFilesDetails/${authUserEmail}`;
                 console.log(endpoint)
                 // const userEmail = "miyarkarthikkamath@gmail.com";
                 // const payload = ({
@@ -155,7 +157,7 @@ const ImageGallery = () => {
     const handleDelete = async () => {
 
         try {
-            const response = await axios.delete(`http://35.165.94.33:8080/file/delete/${imageToDelete}`);
+            const response = await axios.delete(`${baseURL}/file/delete/${imageToDelete}`);
 
             // Log the response to the console
             console.log('Delete Image Response:', response);
@@ -249,7 +251,7 @@ const ImageGallery = () => {
         // }
 
         try {
-            const response = await axios.post('http://35.165.94.33:8080/file/uploadFile', formData, {
+            const response = await axios.post(`${baseURL}/file/uploadFile`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
