@@ -1,0 +1,99 @@
+Resources:
+  TranslateSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Security group for ALB and EC2 instances"
+      VpcId: "vpc-0123456789abcdef0"  
+      SecurityGroupIngress:
+        - CidrIp: "0.0.0.0/0"
+          FromPort: 80
+          IpProtocol: tcp
+          ToPort: 80
+
+  TranslateALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: TranslateALB
+      Subnets:
+        - "subnet-0123456789abcdef0"  
+        - "subnet-123456789abcdef01"  
+      SecurityGroups:
+        - !Ref TranslateSecurityGroup
+      Type: application
+      Scheme: internet-facing
+
+  TranslateTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: TranslateTargetGroup
+      Protocol: HTTP
+      Port: 80
+      VpcId: "vpc-0123456789abcdef0"  
+      TargetType: instance
+      HealthCheckProtocol: HTTP
+      HealthCheckPath: /healthcheck
+      HealthCheckIntervalSeconds: 30
+      HealthCheckTimeoutSeconds: 10
+      HealthyThresholdCount: 3
+      UnhealthyThresholdCount: 3
+
+  TranslateLaunchConfig:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      ImageId: "ami-0123456789abcdef0"
+      InstanceType: "t2.micro"
+      KeyName: "translate-key"
+      SecurityGroups:
+        - !Ref TranslateSecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          git clone https://github.com/MohithGowdaa/CloudProject2
+          cd CloudProject2
+          npm install
+          pm2 start app.js -- --port $PORT
+      Metadata:
+        AWS::CloudFormation::Init:
+          config:
+            commands:
+              01_setEnvironmentVariables:
+                command: |
+                  echo "export AWS_ACCESS_KEY_ID='your_access_key'" >> /home/ec2-user/.bashrc
+                  echo "export AWS_SECRET_ACCESS_KEY='your_secret_key'" >> /home/ec2-user/.bashrc
+                  echo "export AWS_DEFAULT_REGION='your_default_region'" >> /home/ec2-user/.bashrc
+                  echo "export PORT=80" >> /home/ec2-user/.bashrc
+
+  TranslateASG:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      DesiredCapacity: 2
+      MinSize: 1
+      MaxSize: 4
+      LaunchConfigurationName: !Ref TranslateLaunchConfig
+      TargetGroupARNs:
+        - !Ref TranslateTargetGroup
+      VPCZoneIdentifier:
+        - "subnet-0123456789abcdef0"  
+        - "subnet-123456789abcdef01"
+
+  TranslateEIP1:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  TranslateEIP2:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  TranslateEIPAssociation1:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      AllocationId: !GetAtt TranslateEIP1.AllocationId
+      InstanceId: !Ref TranslateASG
+
+  TranslateEIPAssociation2:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      AllocationId: !GetAtt TranslateEIP2.AllocationId
+      InstanceId: !Ref TranslateASG
