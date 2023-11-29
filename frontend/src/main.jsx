@@ -10,6 +10,7 @@ import { BrowserRouter , Route, Routes } from 'react-router-dom';
 import Translate from './components/Translate.jsx';
 import ImageGallery from './components/ImageGallary.jsx';
 import NotFound from './pages/NotFound.jsx';
+import TextAnalysis from './pages/TextAnalyasis.jsx';
 
 Amplify.configure(awsExports);
 Auth.configure(awsExports)
@@ -23,6 +24,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                     {/* <Route path="/app" element={<App />} /> */}
                     <Route path="/images" element={<ImageGallery />} />
                     <Route path="/translate" element={<Translate />} />
+                    <Route path="/textract" element={<TextAnalysis />} />
                     <Route path="*" element={<NotFound />} />
                 </Routes>
             </BrowserRouter>

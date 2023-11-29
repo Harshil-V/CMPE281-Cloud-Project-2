@@ -3,7 +3,6 @@ import axios from 'axios';
 import { Card, Button, Form, Container, Row, Col, Pagination, Badge, Modal } from 'react-bootstrap';
 import { Auth } from 'aws-amplify';
 import DeleteButton from './DeleteButton';
-// import ClipboardJS from 'clipboard';
 
 const baseURL = "http://travelapplicationelb-719830694.us-west-2.elb.amazonaws.com:8080";
 
