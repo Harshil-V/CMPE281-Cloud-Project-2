@@ -76,8 +76,8 @@ public class FileController {
 		return fileService.updateFileDate(fileEntity);
     }
 
-	@GetMapping(value="/welcome")
-    public @ResponseBody String defaultPage() {
-		return "Welcome to Travel App!";
-    }
+	@GetMapping(value="/health")
+    public ResponseEntity<?> healthCheck() {
+		return new ResponseEntity<>("Travel App is up and running!", HttpStatus.OK);
+	}
 }
