@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Card, Button, Form, Container, Row, Col, Pagination, Badge, Modal } from 'react-bootstrap';
 import { Auth } from 'aws-amplify';
 import DeleteButton from './DeleteButton';
+// import ClipboardJS from 'clipboard';
 
 const baseURL = "http://travelapplicationelb-719830694.us-west-2.elb.amazonaws.com:8080";
 
@@ -18,6 +19,10 @@ const ImageGallery = () => {
     const [imageToDelete, setImageToDelete] = useState(null);
 
     const [userData, setUserData] = useState("");
+
+    const [showModal, setShowModal] = useState(false);
+    // const [selectedFileName, setSelectedFileName] = useState('');
+    const [responseData, setResponseData] = useState("");
     // const [error, setError] = useState(null);
 
     // useEffect(() => {
@@ -284,11 +289,50 @@ const ImageGallery = () => {
 
         if (selectedFile && selectedFile.size > 20 * 1024 * 1024) {
             alert('File size exceeds 20MB. Please choose a smaller file.');
+            e.target.value = null;
         } else {
             setNewImage(selectedFile);
         }
     };
 
+
+    // eslint-disable-next-line no-unused-vars
+    const handleButtonClick = async (fileName) => {
+        try {
+            // Make your Axios POST request here with fileName
+            const requestBody = {
+                bucket: "travel-file-storage",
+                fileName: fileName
+            }
+            console.log(requestBody)
+            const response = await axios.post('https://4rwdz4ujlk.execute-api.us-west-2.amazonaws.com/prod/signedurl/', requestBody );
+            // Assuming your response is a JSON object with key1 and key2
+            const data = response.data;
+            console.log(data)
+            // Update state to show the modal and set the response data and selectedFileName
+            setResponseData(data);
+            // setSelectedFileName(fileName);
+            setShowModal(true);
+        } catch (error) {
+            console.error('Error making POST request:', error);
+        }
+    };
+
+    const handleCopyClick = async () => {
+        try {
+            // Use the Clipboard API to copy the desired value to the clipboard
+            await navigator.clipboard.writeText(responseData.key1);
+            alert('Value copied to clipboard!');
+        } catch (error) {
+            console.error('Error copying to clipboard:', error);
+        }
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+        setResponseData("");
+        // setSelectedFileName('');
+    };
     // const handleDeleteConfirmation = (id) => {
     //     const isConfirmed = window.confirm('Are you sure you want to delete this image?');
 
@@ -369,13 +413,12 @@ const ImageGallery = () => {
                                     <DeleteButton onClick={() => openConfirmationModal(image.fileName)}>
                                         Delete
                                     </DeleteButton>
-                                    <Button className='mt-2' style={{ marginLeft: 5, backgroundColor: "#1DA1F2", borderColor: "#1DA1F2" }}>
+                                    {/* <Button className='mt-2' style={{ marginLeft: 5, backgroundColor: "#1DA1F2", borderColor: "#1DA1F2" }} onClick={() => handleButtonClick(image.fileName)}>
                                         <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" fill='#ffffff'>
 
-                                            <path d="M307 34.8c-11.5 5.1-19 16.6-19 29.2v64H176C78.8 128 0 206.8 0 304C0 417.3 81.5 467.9 100.2 478.1c2.5 1.4 5.3 1.9 8.1 1.9c10.9 0 19.7-8.9 19.7-19.7c0-7.5-4.3-14.4-9.8-19.5C108.8 431.9 96 414.4 96 384c0-53 43-96 96-96h96v64c0 12.6 7.4 24.1 19 29.2s25 3 34.4-5.4l160-144c6.7-6.1 10.6-14.7 10.6-23.8s-3.8-17.7-10.6-23.8l-160-144c-9.4-8.5-22.9-10.6-34.4-5.4z" /></svg>{/* <svg xmlns="http://www.w3.org/2000/svg" width="" height="16" fill="currentColor" className="bi bi-twitter" viewBox="0 0 16 16">
-                                            <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15" />
-                                        </svg> */}
-                                    </Button>
+                                            <path d="M307 34.8c-11.5 5.1-19 16.6-19 29.2v64H176C78.8 128 0 206.8 0 304C0 417.3 81.5 467.9 100.2 478.1c2.5 1.4 5.3 1.9 8.1 1.9c10.9 0 19.7-8.9 19.7-19.7c0-7.5-4.3-14.4-9.8-19.5C108.8 431.9 96 414.4 96 384c0-53 43-96 96-96h96v64c0 12.6 7.4 24.1 19 29.2s25 3 34.4-5.4l160-144c6.7-6.1 10.6-14.7 10.6-23.8s-3.8-17.7-10.6-23.8l-160-144c-9.4-8.5-22.9-10.6-34.4-5.4z" /></svg>
+                                           
+                                    </Button> */}
                                 </div>
 
                             </Card.Body>
@@ -414,6 +457,23 @@ const ImageGallery = () => {
                     </Button>
                     <Button variant="danger" onClick={handleDelete}>
                         Delete
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal show={showModal} onHide={handleCloseModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Response URL</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>{responseData.key1}</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={handleCopyClick}>
+                        Copy URL
                     </Button>
                 </Modal.Footer>
             </Modal>
