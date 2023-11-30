@@ -56,6 +56,9 @@ The project's impact lies in offering a comprehensive and intelligent solution f
 ### Optical Character Recognition (Extract Text From Images)
 ![OCR](screenshots/OCR.png)
 
+### Architecture Diagram
+![Architecture Diagram](screenshots/AWS_ARCH.jpg)
+
 ## Pre-requisites Set Up
 
 ### Cloud Configuration
