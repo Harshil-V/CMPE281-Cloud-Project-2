@@ -175,7 +175,10 @@ $ npm i # or npm install
 
 <h35>3. Open Code Editor and create a .env file</h35> 
 
-<h36>4. AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_DEFAULT_REGION</h36> 
+<h36>4. Add values to 
+AWS_ACCESS_KEY_ID 
+AWS_SECRET_ACCESS_KEY 
+AWS_DEFAULT_REGION</h36> 
 
 ```bash
 $ npm run dev # application will be accessible at `http://localhost:4000/``
