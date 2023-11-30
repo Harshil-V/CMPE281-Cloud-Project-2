@@ -22,7 +22,6 @@ const Translation = () => {
     const callTranslationAPI = async () => {
         console.log(`Text: ${inputText}`)
         console.log(`Code: ${selectLanguageCode}`)
-        // setSegmentation('');
         setAudioUrl('');
         try {
             const response = await axios.post("http://myalb-1741799579.us-west-2.elb.amazonaws.com/translate/", {
@@ -37,16 +36,17 @@ const Translation = () => {
                 const audioBlob = new Blob([audioData], { type: 'audio/mp3' });
                 const audioURLGen = URL.createObjectURL(audioBlob);
                 setAudioUrl(audioURLGen);
-                console.log(audioURLGen);
-                console.log("Audio URL", audioURLGen)
+                // console.log(audioURLGen);
+                // console.log("Audio URL", audioURLGen)
             } else {
                 alert("No Audio Stream Received.")
             }
 
             setSegmentation(response.data.sentiment);
-            console.log(response.data.sentiment)
+            // console.log(response.data.sentiment)
 
         } catch (error) {
+            alert("There was an error!", error)
             console.error("There was an error!", error)
         }
     }
@@ -55,47 +55,11 @@ const Translation = () => {
         if (inputText == '') {
             alert("Input Field is Empty :(")
         } else {
-            // Implement translation logic here
-            // You may use a translation API like Google Translate or any other service
-
-            // For demonstration purposes, let's just reverse the input text
-            // const reversedText = inputText.split('').reverse().join('');
-            // setOutputText(reversedText);
-
-            // // For demonstration purposes, audio URL is set to Google Translate TTS API
-            // const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(reversedText)}&tl=${selectedLanguage}&total=1&idx=0&textlen=${reversedText.length}`;
-            // setAudioUrl(ttsUrl);
-            // setAudioUrl("https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3")
-            // setSegmentation("Negative");
-
-            // console.log(ttsUrl);
             callTranslationAPI();
         }
     };
 
     return (
-        // <Container>
-        //     <Row className="justify-content-md-center">
-        //         <Col xs={12} md={6}>
-        //             <Form>
-        //                 <Form.Group controlId="exampleForm.ControlTextarea1">
-        //                     <Form.Label>Text to Translate</Form.Label>
-        //                     <Form.Control as="textarea" rows={3} />
-        //                 </Form.Group>
-        //                 <Form.Group controlId="exampleForm.ControlSelect1">
-        //                     <Form.Label>Select Language</Form.Label>
-        //                     <Form.Control as="select">
-        //                         <option>US English</option>
-        //                         {/* Add other language options here */}
-        //                     </Form.Control>
-        //                 </Form.Group>
-        //                 <Button variant="primary" type="submit">
-        //                     Translate
-        //                 </Button>
-        //             </Form>
-        //         </Col>
-        //     </Row>
-        // </Container>
         <Container className="container" style={{ width: 800, backgroundColor: 'grey', padding: 14, borderRadius: 5, marginTop: 25 }} >
             <center>
                 <h2 style={{ paddingLeft: 20 }}>Language Translation</h2>
@@ -140,7 +104,6 @@ const Translation = () => {
                                     <Dropdown.Item eventKey="Italian" onClick={() => handleLanguageChange('it', 'Italian')}>Italian</Dropdown.Item>
                                     <Dropdown.Item eventKey="Japanese" onClick={() => handleLanguageChange('ja', 'Japanese')}>Japanese</Dropdown.Item>
                                     {/* <Dropdown.Item eventKey="Hindi" onClick={() => handleLanguageChange('hi', 'Hindi')}>Hindi</Dropdown.Item> */}
-                                    {/* Add more language options as needed */}
                                 </DropdownButton>
                             </Col>
                         </Form.Group>

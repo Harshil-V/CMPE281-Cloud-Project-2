@@ -30,10 +30,11 @@ const Textract = () => {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-            console.log(response);
-            // Assuming the response is an array of strings
+            // console.log(response);
+            
             setResponseList(response.data);
         } catch (error) {
+            alert('Error uploading file:', error)
             console.error('Error uploading file:', error);
         }
     };

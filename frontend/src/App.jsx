@@ -1,4 +1,3 @@
-// import Gallery from './components/Gallary'
 import ImageGallery from './components/ImageGallary'
 import NavigationBar from './components/NavBar'
 

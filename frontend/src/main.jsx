@@ -21,7 +21,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <BrowserRouter>
                 <Routes>
                     <Route path="/" exact element={<App />} />
-                    {/* <Route path="/app" element={<App />} /> */}
                     <Route path="/images" element={<ImageGallery />} />
                     <Route path="/translate" element={<Translate />} />
                     <Route path="/textract" element={<TextAnalysis />} />
