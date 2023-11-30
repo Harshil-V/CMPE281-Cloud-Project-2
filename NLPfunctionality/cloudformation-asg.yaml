@@ -1,99 +1,73 @@
 Resources:
-  TranslateSecurityGroup:
+  MySecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: "Security group for ALB and EC2 instances"
-      VpcId: "vpc-0123456789abcdef0"  
+      GroupDescription: "Security group for ALB and EC2 instance"
+      VpcId: "vpc-0d3b4d6230afcd228"  
       SecurityGroupIngress:
         - CidrIp: "0.0.0.0/0"
           FromPort: 80
           IpProtocol: tcp
           ToPort: 80
+        - CidrIp: "0.0.0.0/0"  
+          FromPort: 22
+          IpProtocol: tcp
+          ToPort: 22
 
-  TranslateALB:
+  MyALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
-      Name: TranslateALB
+      Name: MyALB
       Subnets:
-        - "subnet-0123456789abcdef0"  
-        - "subnet-123456789abcdef01"  
+        - "subnet-08af1069f113064e3"  
+        - "subnet-0e88a5c2d3065b2b1"  
+        - "subnet-0fcf16ebd83e3c3b5"  
+        - "subnet-0978365546736f0e5"  
       SecurityGroups:
-        - !Ref TranslateSecurityGroup
+        - !Ref MySecurityGroup
       Type: application
       Scheme: internet-facing
 
-  TranslateTargetGroup:
+  MyTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      Name: TranslateTargetGroup
+      Name: MyTargetGroup
       Protocol: HTTP
       Port: 80
-      VpcId: "vpc-0123456789abcdef0"  
-      TargetType: instance
-      HealthCheckProtocol: HTTP
-      HealthCheckPath: /healthcheck
-      HealthCheckIntervalSeconds: 30
-      HealthCheckTimeoutSeconds: 10
-      HealthyThresholdCount: 3
-      UnhealthyThresholdCount: 3
+      VpcId: "vpc-0d3b4d6230afcd228"  
+      Targets:
+        - Id: !Ref MyEC2Instance  
 
-  TranslateLaunchConfig:
-    Type: AWS::AutoScaling::LaunchConfiguration
+  MyListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
-      ImageId: "ami-0123456789abcdef0"
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref MyTargetGroup
+      LoadBalancerArn: !Ref MyALB
+      Port: 80
+      Protocol: HTTP
+
+  MyEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: "ami-093467ec28ae4fe03"  
       InstanceType: "t2.micro"
-      KeyName: "translate-key"
-      SecurityGroups:
-        - !Ref TranslateSecurityGroup
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash
-          git clone https://github.com/MohithGowdaa/CloudProject2
-          cd CloudProject2
-          npm install
-          pm2 start app.js -- --port $PORT
-      Metadata:
-        AWS::CloudFormation::Init:
-          config:
-            commands:
-              01_setEnvironmentVariables:
-                command: |
-                  echo "export AWS_ACCESS_KEY_ID='your_access_key'" >> /home/ec2-user/.bashrc
-                  echo "export AWS_SECRET_ACCESS_KEY='your_secret_key'" >> /home/ec2-user/.bashrc
-                  echo "export AWS_DEFAULT_REGION='your_default_region'" >> /home/ec2-user/.bashrc
-                  echo "export PORT=80" >> /home/ec2-user/.bashrc
+      KeyName: "translate" 
+      SecurityGroupIds:
+        - !Ref MySecurityGroup
+      SubnetId: "subnet-0978365546736f0e5"  
+      Tags:
+        - Key: Name
+          Value: aws-ml
 
-  TranslateASG:
-    Type: AWS::AutoScaling::AutoScalingGroup
-    Properties:
-      DesiredCapacity: 2
-      MinSize: 1
-      MaxSize: 4
-      LaunchConfigurationName: !Ref TranslateLaunchConfig
-      TargetGroupARNs:
-        - !Ref TranslateTargetGroup
-      VPCZoneIdentifier:
-        - "subnet-0123456789abcdef0"  
-        - "subnet-123456789abcdef01"
-
-  TranslateEIP1:
+  MyNewEIP:
     Type: AWS::EC2::EIP
     Properties:
-      Domain: vpc
+      Domain: vpc  
 
-  TranslateEIP2:
-    Type: AWS::EC2::EIP
-    Properties:
-      Domain: vpc
-
-  TranslateEIPAssociation1:
+  MyEIPAssociation:
     Type: AWS::EC2::EIPAssociation
     Properties:
-      AllocationId: !GetAtt TranslateEIP1.AllocationId
-      InstanceId: !Ref TranslateASG
-
-  TranslateEIPAssociation2:
-    Type: AWS::EC2::EIPAssociation
-    Properties:
-      AllocationId: !GetAtt TranslateEIP2.AllocationId
-      InstanceId: !Ref TranslateASG
+      AllocationId: !GetAtt MyNewEIP.AllocationId  
+      InstanceId: !Ref MyEC2Instance
