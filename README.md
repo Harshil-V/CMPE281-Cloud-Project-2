@@ -160,4 +160,23 @@ $ npm run dev # application will be accessible at `http://localhost:5173/``
 
 ### Backend (Spring Boot) 
 
-### Backend ()
+### Backend (nodeJS)
+<h4>1. Change Directory to /NLPfunctionality</h4>
+
+```bash
+$ cd NLPfunctionality
+```
+
+<h34>2. Install Dependencies</h34> 
+
+```bash
+$ npm i # or npm install
+```
+
+<h35>3. Open Code Editor and create a .env file</h35> 
+
+<h36>4. AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_DEFAULT_REGION</h36> 
+
+```bash
+$ npm run dev # application will be accessible at `http://localhost:4000/``
+```
