@@ -100,8 +100,6 @@ Make sure you have the following software installed on your local machine:
     ```bash
     $ amplify configure
     ```
-5. 
-
 
 ### Local Project Configuration
 [Provide instructions on how to configure the project locally, if applicable]
