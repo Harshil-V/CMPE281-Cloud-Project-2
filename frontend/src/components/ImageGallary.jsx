@@ -342,7 +342,7 @@ const ImageGallery = () => {
 
     return (
         <Container className='mt-4'>
-            <h1>Image Gallary</h1>
+            <h1>Image Gallery</h1>
 
             {/* {userData &&
                 <ul>

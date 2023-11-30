@@ -105,8 +105,23 @@ const Translation = () => {
                     <h3 style={{ paddingLeft: 30 }}>Input</h3>
 
                     <Form >
+
+                        <Form.Group as={Row} controlId="inputText" style={{ paddingLeft: 35, paddingRight: 35 }}>
+                            <Form.Label column sm={3}>
+                                Enter Text:
+                            </Form.Label>
+                            <Col>
+                                <FormControl
+                                    style={{ marginTop: 10 }}
+                                    as="textarea"
+                                    rows={3}
+                                    value={inputText}
+                                    onChange={(e) => setInputText(e.target.value)}
+                                />
+                            </Col>
+                        </Form.Group>
                         <Form.Group as={Row} controlId="languageDropdown" style={{
-                            paddingLeft: 35, paddingRight: 35
+                            paddingLeft: 35, paddingRight: 35, marginTop: 10
                         }}>
                             <Form.Label column sm={3}>
                                 Language:
@@ -129,20 +144,6 @@ const Translation = () => {
                                 </DropdownButton>
                             </Col>
                         </Form.Group>
-                        <Form.Group as={Row} controlId="inputText" style={{ paddingLeft: 35, paddingRight: 35 }}>
-                            <Form.Label column sm={3}>
-                                Enter Text:
-                            </Form.Label>
-                            <Col>
-                                <FormControl
-                                    style={{ marginTop: 10 }}
-                                    as="textarea"
-                                    rows={3}
-                                    value={inputText}
-                                    onChange={(e) => setInputText(e.target.value)}
-                                />
-                            </Col>
-                        </Form.Group>
                         <Form.Group as={Row} style={{ paddingLeft: 35, paddingRight: 35 }}>
                             <Col sm={{ span: 10, offset: 6 }}>
                                 <Button variant="primary" onClick={handleTranslate} style={{ marginTop: 10 }}>
@@ -153,7 +154,7 @@ const Translation = () => {
                     </Form>
                 </Col>
             </Row>
-            <Row className="justify-content-md-center m-3" style={{ backgroundColor: '#D3D3D3', borderRadius: 5, paddingTop: 10}}>
+            <Row className="justify-content-md-center m-3" style={{ backgroundColor: '#D3D3D3', borderRadius: 5, paddingTop: 10 }}>
                 <Col>
                     <h3 style={{ paddingLeft: 30 }}>Output</h3>
                     <Form.Group controlId="outputText" style={{ paddingLeft: 35, paddingRight: 35 }}>
