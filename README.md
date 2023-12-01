@@ -86,7 +86,9 @@ Make sure you have the following software installed on your local machine:
 - AWS Amplify CLI
 - VSCODE IDE 
 - IntelliJ
-- MySQL WOrkbench
+- MySQL Workbench
+- JDK 11
+- Maven
 - PostMan
 
 ## Local Configuration
