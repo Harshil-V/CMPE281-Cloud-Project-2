@@ -85,12 +85,9 @@ Make sure you have the following software installed on your local machine:
 - AWS CLI
 - AWS Amplify CLI
 - VSCODE IDE 
-
-
-- [ ] [Software 1, e.g., Spring]
-- [ ] [Software 2, e.g., JDK]
-- [ ] [Software 3, e.g., Eclipse IDE]
-- [ ] [Other relevant software]
+- IntelliJ
+- MySQL WOrkbench
+- PostMan
 
 ## Local Configuration
 
@@ -159,6 +156,44 @@ $ npm run dev # application will be accessible at `http://localhost:5173/``
 
 
 ### Backend (Spring Boot) 
+
+> Note: Have a JDK installation on your system. Either set the JAVA_HOME environment variable pointing to your JDK installation or have the java executable on your PATH.
+
+> This project uses JDK 11. To check your JDK version installed locally:
+
+```bash
+$ java -version
+```
+
+<h4>1. Change Directory to /backend</h4>
+
+```bash
+$ cd frontend
+```
+
+<h4>2. Run the below Maven cmd </h4>
+
+```bash
+$ mvn clean install
+```
+
+<h4>3. Run the below Maven cmd to create a jar in target folder</h4>
+
+```bash
+$ mvn clean package
+```
+
+<h4>4. To run the Spring boot application using jar </h4>
+
+```bash
+$ java -jar target/travel-app-0.0.1-SNAPSHOT.jar
+```
+
+<h4>5. To run the Spring boot application using Maven </h4>
+
+```bash
+$ $ mvn spring-boot:run
+```
 
 ### Backend (nodeJS)
 <h4>1. Change Directory to /NLPfunctionality</h4>
