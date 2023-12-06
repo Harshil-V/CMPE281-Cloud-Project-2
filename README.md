@@ -218,5 +218,5 @@ AWS_SECRET_ACCESS_KEY
 AWS_DEFAULT_REGION</h36> 
 
 ```bash
-$ npm run dev # application will be accessible at `http://localhost:4000/``
+$ npm start # application will be accessible at `http://localhost:4000/``
 ```
