@@ -21,6 +21,18 @@ const ImageGallery = () => {
 
     const [showModal, setShowModal] = useState(false);
     const [responseData, setResponseData] = useState("");
+    const [description, setDescription] = useState('');
+    const [showDescriptionModal, setShowDescriptionModal] = useState(false);
+
+    const openDescriptionModal = () => {
+        setShowDescriptionModal(true);
+    };
+
+    const closeDescriptionModal = () => {
+        setShowDescriptionModal(false);
+    };
+
+
     // const [error, setError] = useState(null);
 
 
@@ -36,8 +48,6 @@ const ImageGallery = () => {
             console.log(err)
         });
 
-
-
         const fetchData = async () => {
             if (authUserEmail && authUser) {
                 const endpoint = `${baseURL}/file/getUserFilesDetails/${authUserEmail}`;
@@ -49,12 +59,10 @@ const ImageGallery = () => {
                     console.log(userData);
                     setImages(response.data);
                 } catch (error) {
-                    // setError(error.message || 'An error occurred');
-                    alert('Error fetching user data:', error)
-                    console.error('Error fetching user data:', error);
+                    alert('Error fetching user data', error)
+                    console.error('Error fetching user data', error);
                 }
             }
-
         };
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -78,19 +86,16 @@ const ImageGallery = () => {
         try {
             const response = await axios.delete(`${baseURL}/file/delete/${imageToDelete}`);
 
-            
             console.log('Delete Image Response:', response);
 
             // Update the local state by filtering out the deleted image
             const updatedImages = images.filter((image) => image.fileName !== imageToDelete);
             setImages(updatedImages);
 
-           
             closeConfirmationModal();
         } catch (error) {
             alert('Error deleting image:', error)
             console.error('Error deleting image:', error);
-
         }
 
     };
@@ -101,54 +106,10 @@ const ImageGallery = () => {
             alert('Please select an image to upload.');
             return;
         }
-        const description = window.prompt(`Please enter a description for the image file - '${newImage.name}':`);
 
-        if (description === null) {
-            return;
-        }
-
-        if (description.trim() === '') {
-            alert('Description is required. Please try again.');
-            return;
-        }
-
-        const fileEntity = {
-            "fileDesc": description,
-            "versionNo": "1",
-            "uploadDate": new Date().toISOString().split('T')[0],
-            "updateDate": new Date().toISOString().split('T')[0],
-            "userEmail": authUserEmail
-        }
-
-        console.log(authUser);
-
-        const formData = new FormData();
-        formData.append('file', newImage);
-        formData.append('fileDesc', description);
-        formData.append('versionNo', 1);
-        formData.append('userEmail', authUserEmail);
-
-       
-        console.log(fileEntity)
-       
-
-        try {
-            const response = await axios.post(`${baseURL}/file/uploadFile`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            console.log(response);
-
-            alert(`${response.data}`)
-            const newImageData = response.data;
-            setImages([...images, newImageData]);
-            setNewImage(null); // Clear the file input after a successful upload
-            location.reload();
-        } catch (error) {
-            console.error('Error uploading image:', error);
-        }
+        openDescriptionModal();
     };
+
 
     const openConfirmationModal = (id) => {
         setImageToDelete(id);
@@ -172,23 +133,63 @@ const ImageGallery = () => {
         }
     };
 
+    const handleDescriptionSubmit = async () => {
+        if (description.trim() === '') {
+            alert('Description is required. Please try again.');
+            return;
+        }
+
+        closeDescriptionModal();
+
+        console.log(newImage)
+        console.log(description)
+        console.log(authUserEmail)
+
+        const formData = new FormData();
+        formData.append('file', newImage);
+        formData.append('fileDesc', description);
+        formData.append('versionNo', 1);
+        formData.append('userEmail', authUserEmail);
+
+        try {
+            // Make the API call to upload the image
+            const response = await axios.post(`${baseURL}/file/uploadFile`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            console.log(response);
+
+            alert(`${response.data}`);
+
+            // Update the local state with the new image data
+            const newImageData = response.data;
+            setImages([...images, newImageData]);
+            setNewImage(null); // Clear the file input after a successful upload
+            location.reload(); // Consider using a better approach to update the UI without a full page reload
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            alert('Error uploading image:', error.message || 'An error occurred');
+        }
+    };
 
     // eslint-disable-next-line no-unused-vars
     const handleButtonClick = async (fileName) => {
         try {
-            
+
             const requestBody = {
                 bucket: "travel-file-storage",
                 fileName: fileName
             }
             console.log(requestBody)
-            const response = await axios.post('https://4rwdz4ujlk.execute-api.us-west-2.amazonaws.com/prod/signedurl/', requestBody );
-           
+            const response = await axios.post('https://4rwdz4ujlk.execute-api.us-west-2.amazonaws.com/prod/signedurl/', requestBody);
+
             const data = response.data;
             console.log(data)
-            
+
             setResponseData(data);
-            
+
             setShowModal(true);
         } catch (error) {
             console.error('Error making POST request:', error);
@@ -210,7 +211,7 @@ const ImageGallery = () => {
         setResponseData("");
         // setSelectedFileName('');
     };
-   
+
     return (
         <Container className='mt-4'>
             <h1>Image Gallery</h1>
@@ -264,7 +265,7 @@ const ImageGallery = () => {
                                 </div>
 
                                 <div className='button-group'>
-                                    <DeleteButton onClick={() => openConfirmationModal(image.fileName)} style={{marginLeft: 3}}>
+                                    <DeleteButton onClick={() => openConfirmationModal(image.fileName)} style={{ marginLeft: 3 }}>
                                         Delete
                                     </DeleteButton>
                                     {/* <Button className='mt-2' style={{ marginLeft: 5, backgroundColor: "#1DA1F2", borderColor: "#1DA1F2" }} onClick={() => handleButtonClick(image.fileName)}>
@@ -331,6 +332,32 @@ const ImageGallery = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+            <Modal show={showDescriptionModal} onHide={closeDescriptionModal} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Enter Image Description</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form.Group controlId="descriptionInput">
+                        <Form.Label>Description:</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Enter description"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                        />
+                    </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={closeDescriptionModal}>
+                        Cancel
+                    </Button>
+                    <Button variant="primary" onClick={handleDescriptionSubmit}>
+                        Submit
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
         </Container>
     );
 };
