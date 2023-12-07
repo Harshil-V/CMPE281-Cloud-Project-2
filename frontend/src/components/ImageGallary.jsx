@@ -34,10 +34,6 @@ const ImageGallery = () => {
         setShowDescriptionModal(false);
     };
 
-
-    // const [error, setError] = useState(null);
-
-
     useEffect(() => {
 
         Auth.currentAuthenticatedUser({
