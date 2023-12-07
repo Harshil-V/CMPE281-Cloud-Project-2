@@ -17,9 +17,9 @@
 *	Professor: [Sanjay Garje](https://www.linkedin.com/in/sanjaygarje/)
 *	Students: 
     - [Harshil Vyas](https://www.linkedin.com/in/harshil-vyas/)
-    - [Miyar Karthik Kamath]()
+    - [Miyar Karthik Kamath](https://www.linkedin.com/in/mkarthikkamath/)
     - [Mohith Gowdaa]()
-    - [Ahmed Zaytoun]()
+    - [Ahmed Zaytoun](https://www.linkedin.com/in/ahmed-zaytoun-67825321/)
     
 
 ## Project Introduction:
@@ -218,5 +218,5 @@ AWS_SECRET_ACCESS_KEY
 AWS_DEFAULT_REGION</h36> 
 
 ```bash
-$ npm start # application will be accessible at `http://localhost:4000/``
+$ npm start # application will be accessible at `http://localhost:4000/`
 ```
