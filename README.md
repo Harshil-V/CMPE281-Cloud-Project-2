@@ -18,7 +18,7 @@
 *	Students: 
     - [Harshil Vyas](https://www.linkedin.com/in/harshil-vyas/)
     - [Miyar Karthik Kamath](https://www.linkedin.com/in/mkarthikkamath/)
-    - [Mohith Gowdaa]()
+    - [Mohith Gowdaa](https://www.linkedin.com/in/mohith-gg/)
     - [Ahmed Zaytoun](https://www.linkedin.com/in/ahmed-zaytoun-67825321/)
     
 
