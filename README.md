@@ -194,7 +194,7 @@ $ java -jar target/travel-app-0.0.1-SNAPSHOT.jar
 <h4>5. To run the Spring boot application using Maven </h4>
 
 ```bash
-$ $ mvn spring-boot:run
+$ mvn spring-boot:run
 ```
 
 ### Backend (nodeJS)

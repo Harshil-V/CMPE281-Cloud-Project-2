@@ -23,6 +23,8 @@ const ImageGallery = () => {
     const [responseData, setResponseData] = useState("");
     const [description, setDescription] = useState('');
     const [showDescriptionModal, setShowDescriptionModal] = useState(false);
+    const [fileNotSelected, setFileNotSelected] = useState(false);
+
 
     const openDescriptionModal = () => {
         setShowDescriptionModal(true);
@@ -103,7 +105,8 @@ const ImageGallery = () => {
     const handleImageUpload = async (e) => {
         e.preventDefault();
         if (!newImage) {
-            alert('Please select an image to upload.');
+            // alert('Please select an image to upload.');
+            setFileNotSelected(true);
             return;
         }
 
@@ -177,28 +180,33 @@ const ImageGallery = () => {
     // eslint-disable-next-line no-unused-vars
     const handleButtonClick = async (fileName) => {
         try {
-
             const requestBody = {
                 bucket: "travel-file-storage",
                 fileName: fileName
-            }
-            console.log(requestBody)
+            };
+
             const response = await axios.post('https://4rwdz4ujlk.execute-api.us-west-2.amazonaws.com/prod/signedurl/', requestBody);
 
             const data = response.data;
-            console.log(data)
+            console.log(data);
 
-            setResponseData(data);
+            if (response.status === 200) {
+                const responseBody = JSON.parse(data.body);
+                const signedUrl = JSON.parse(responseBody.signedUrl);
+                setResponseData(signedUrl);
 
-            setShowModal(true);
+                setShowModal(true);
+            } else {
+                alert(`Error: ${response.status} - ${data.message}`);
+            }
         } catch (error) {
             console.error('Error making POST request:', error);
+            alert('Error making POST request', error.message || 'An error occurred');
         }
     };
 
     const handleCopyClick = async () => {
         try {
-            // Use the Clipboard API to copy the desired value to the clipboard
             await navigator.clipboard.writeText(responseData.key1);
             alert('Value copied to clipboard!');
         } catch (error) {
@@ -241,7 +249,7 @@ const ImageGallery = () => {
                                 onChange={handleFileChange}
                                 className="mr-2"
                             />
-                            <Button style={{ marginLeft: 15 }} variant="primary" onClick={handleImageUpload}>Upload</Button>
+                            <Button style={{ marginLeft: 15 }} variant="primary" onClick={handleImageUpload} disabled={!newImage}>Upload</Button>
                         </Form.Group>
                     </Form>
                 </Col>
@@ -272,7 +280,7 @@ const ImageGallery = () => {
                                         <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" fill='#ffffff'>
 
                                             <path d="M307 34.8c-11.5 5.1-19 16.6-19 29.2v64H176C78.8 128 0 206.8 0 304C0 417.3 81.5 467.9 100.2 478.1c2.5 1.4 5.3 1.9 8.1 1.9c10.9 0 19.7-8.9 19.7-19.7c0-7.5-4.3-14.4-9.8-19.5C108.8 431.9 96 414.4 96 384c0-53 43-96 96-96h96v64c0 12.6 7.4 24.1 19 29.2s25 3 34.4-5.4l160-144c6.7-6.1 10.6-14.7 10.6-23.8s-3.8-17.7-10.6-23.8l-160-144c-9.4-8.5-22.9-10.6-34.4-5.4z" /></svg>
-                                           
+
                                     </Button> */}
                                 </div>
 
@@ -354,6 +362,37 @@ const ImageGallery = () => {
                     </Button>
                     <Button variant="primary" onClick={handleDescriptionSubmit}>
                         Submit
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal show={showModal} onHide={handleCloseModal} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Response URL</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>{responseData}</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={handleCopyClick}>
+                        Copy URL
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal show={fileNotSelected} onHide={() => setFileNotSelected(false)} centered>
+                <Modal.Header closeButton style={{ background: '#eed202' }}>
+                    <Modal.Title>File Missing</Modal.Title>
+                </Modal.Header>
+                <Modal.Body >
+                    Please select an image to upload.
+                </Modal.Body>
+                <Modal.Footer >
+                    <Button variant="secondary" onClick={() => setFileNotSelected(false)}>
+                        Close
                     </Button>
                 </Modal.Footer>
             </Modal>
