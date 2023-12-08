@@ -75,7 +75,6 @@ Before running the project, make sure to set up the following resources in your 
 - Route 53
 - AWS Lambda (from CLI / CloudFormation) 
 - SNS
-- [Other relevant cloud services]
 
 ### Local Software Requirements
 Make sure you have the following software installed on your local machine:
